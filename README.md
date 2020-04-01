@@ -41,12 +41,12 @@ To run the game with Bonfire, just use the widget:
     return BonfireWidget(
       joystick: MyJoystick(), // required
       map: DungeonMap.map(), // required
-      player: Knight(), // Caso o player não seja especificado, o direcional do joystick terá a função de explorar o mapa, sendo bem útil para auxiliar na construção do mapa.
+      player: Knight(), // If the player is not specified, the directional pad of the joystick will have the function of exploring the map, this will be very useful to assist in the construction of the map.
       interface: KnightInterface(),
       decorations: DungeonMap.decorations(),
       enemies: DungeonMap.enemies(),
       background: BackgroundColorGame(Colors.blueGrey[900]),
-      constructionMode: false, // Se true ativa hot reload para facilitar construção do mapa e desenha grid.
+      constructionMode: false, // If true activates hot reload to facilitate map construction and draw grid.
       listener: (context, game) {
         // TODO ANYTHING
       },
@@ -54,59 +54,60 @@ To run the game with Bonfire, just use the widget:
   }
 ```
 
-Descrição dos componentes e organização:
+Description of components and organization:
 
 ![](https://github.com/RafaelBarbosatec/bonfire/blob/master/media/game_diagram.png)
 
 ### Map
-Representa nada mais que o mapa (ou mundo) em que o jogo ocorre. 
+Represents the map (world) of the game.
 
-Consiste em uma matriz de quadradinhos (Tiles), que em conjunto formam o seu mundo [(veja)](https://www.mapeditor.org/img/screenshot-terrain.png). Atualmente você monta essa matriz manualmente, como podemos ver nesse [exemplo](https://github.com/RafaelBarbosatec/bonfire/blob/master/example/lib/map/dungeon_map.dart), mas futuramente terá suporte para o carregamento de mapas montados com [Tiled](https://www.mapeditor.org/).
+It consists of a matrix of squares (Tiles), which together form your world [(look)](https://www.mapeditor.org/img/screenshot-terrain.png). You currently assemble this matrix manually, as we can see in this [example](https://github.com/RafaelBarbosatec/bonfire/blob/master/example/lib/map/dungeon_map.dart), but in the future it will have support for loading maps assembled with [Tiled](https://www.mapeditor.org/).
 
-Existe um componente pronto e o nome dele é: 
+There is a component ready and its name is:
 ```dart
 MapWorld(List<Tile>())
 ```
-Nele passamos a lista de Tiles que montará nosso mapa e toda a movimentação de câmera durante as ações do Player estão incluídas nele.
+
+In it we pass the list of Tiles that will mount our map.
 
 ```dart
 Tile(
-   'tile/wall_left.png', // Imagem que representa esse Tile.
-   Position(positionX, positionY), // posição no mapa onde será renderizado.
-   collision: true, // se ele possui colisão, ou seja, nem o player nem inimigos irão passar por ele (ideal para muros e obstáculos).
-   size: 16 // Tamanho do tile, nesse caso 16x16
+   'tile/wall_left.png', // image that represents this Tile.
+   Position(positionX, positionY), // position on the map where it will be rendered.
+   collision: true, // if it has a collision, that is, neither the player nor enemies will pass through it (ideal for walls and obstacles).
+   size: 16 // Tile size, in this case 16x16
 )
 ```
 
 ### Decorations
-Representa qualquer coisa que você queira adicionar ao cenário, podendo ser um simples "barril" no meio do caminho ou mesmo um NPC que você poderá utilizar para interagir com o seu player.
+It represents anything you want to add to the scenario, it can be a simple "barrel" in the middle of the path or even an NPC that you can use to interact with your player.
 
-Você poderá criar seu decoration utilizando:
+You can create your decoration like this:
 
 ```dart
 GameDecoration(
-  spriteImg: 'itens/table.png', // imagem que será renderizada.
-  initPosition: getRelativeTilePosition(10, 6), // posição no mundo que será posicionado.
+  spriteImg: 'itens/table.png', // image that will be rendered.
+  initPosition: getRelativeTilePosition(10, 6), // position in the world to be positioned.
   width: 32,
   height: 32,
-  withCollision: true, // adiciona colisão default.
-  collision: Collision( // caso queira customizar a área de colisão.
+  withCollision: true, // enables default collision.
+  collision: Collision( // use if you want to customize the collision area.
     width: 18,
     height: 32,
   ),
-//  animation: FlameAnimation(), // caso você queira adicionar algo animado você pode passar sua animação aqui e não passar o 'spriteImg'.
+//  animation: FlameAnimation(), // if you want to add something animated you can pass your animation here and not pass the 'spriteImg'.
 //  frontFromPlayer: false // caso queira forçar que esse elemento fique por cima do player ao passar por ele.
 )
 ```   
 
-ou também poderá criar sua própria classe, bastando extender de ```GameDecoration``` e adicionar os comportamentos que desejar utilizando o ```update``` e/ou ```render```, como feito nesse [exemplo](https://github.com/RafaelBarbosatec/bonfire/blob/master/example/lib/decoration/chest.dart) (um baú que ao player se aproximar, se remove do game e faz "brotar" duas poções de vida que também são ```GameDecoration```).
+Or you can also create your own class by simply extending ```GameDecoration``` and adding the behaviors you want using ```update``` and / or ```render```, as done in this [example](https://github.com/RafaelBarbosatec/bonfire/blob/master/example/lib/decoration/chest.dart).
 
-Neste componente como em todos os demais, você tem acesso ao ```BuildContext``` do Widget que renderiza o game, portanto é possível exibir dialogs, overlays, entre outros componentes do Flutter para exibir algo na tela.
+In this component as in all others, you have access to the ```BuildContext``` of the Widget that renders the game, so it is possible to display dialogs, overlays, among other Flutter components to display something on the screen.
 
 ### Enemy
-É utilizado para representar seus inimigos. Nesse componente existem ações e movimentos prontos para serem utilizados e configurados se quiser. Todavia, caso deseje algo diferente terá a total liberdade de customizar suas ações e movimentos.
+It is used to represent those who want to kill you :-). In this component there are actions and movements ready to be used and configured if you want. However, if you want something different you will have complete freedom to customize your actions and movements.
 
-Para criar seu inimigo você deverá criar uma classe que o represente e extenda de ```Enemy``` como nesse [exemplo](https://github.com/RafaelBarbosatec/bonfire/blob/master/example/lib/enemy/goblin.dart). No construtor você terá os seguintes parâmetros de configuração:
+To create your enemy you must create a class that represents and extends ```Enemy``` as in this [example](https://github.com/RafaelBarbosatec/bonfire/blob/master/example/lib/enemy/goblin.dart). In the constructor you will have these configuration parameters:
 
 ```dart
 Goblin() : super(
@@ -124,23 +125,23 @@ Goblin() : super(
           height: 25,
           speed: 1.5,
           life: 100,
-          collision: Collision(), // Caso deseje editar área de colisão
+          collision: Collision(), // If you want to edit collision area
         );
 ```   
 
-Após esse passos, seu inimigo já está pronto, mas ele não fará nada além de ficar parado. Para adicionar movimentos a ele, você precisará sobrescrever o método ```Update``` e implementar alí o seu comportamento.
-Já existem algumas ações prontas que você poderá utilizar como visto nesse [exemplo](https://github.com/RafaelBarbosatec/bonfire/blob/master/example/lib/enemy/goblin.dart), são eles:
+After these steps, your enemy is ready, but he will do nothing but stand still. To add movements to it, you will need to override the ```Update``` method and implement its behavior there.
+There are already some ready-made actions that you can use as you can see in this [example](https://github.com/RafaelBarbosatec/bonfire/blob/master/example/lib/enemy/goblin.dart), are they:
 
 
 ```dart
 
-//movimentos básicos
+//basic movements
 void moveBottom({double moveSpeed})
 void moveTop({double moveSpeed})
 void moveLeft({double moveSpeed})
 void moveRight({double moveSpeed})
     
-  // De acordo com o raio passado por parâmetro, o inimigo irá procurar e observar o player.
+  // According to the radius passed by parameter, the enemy will search and observe the player.
   void seePlayer(
         {
          Function(Player) observed,
@@ -149,7 +150,7 @@ void moveRight({double moveSpeed})
         }
   )
   
-  // De acordo com o raio configurado, o inimigo irá procurar o player, caso o encontre, irá se movimentar em direção ao player e ao chegar próximo, o método 'closePlayer' será disparado.
+  // According to the configured radius, the enemy will search for the player, if it finds it, it will move towards the player and when it gets close, the 'closePlayer' method will be triggered.
   void seeAndMoveToPlayer(
      {
       Function(Player) closePlayer,
@@ -157,7 +158,7 @@ void moveRight({double moveSpeed})
      }
   )
  
-  // Executa um ataque físico ao player infligindo o dano configurado com a frequência configurada. Poderá adicionar animações para representar esse ataque.
+  // Performs a physical attack on the player inflicting the configured damage with the configured frequency. You can add animations to represent that attack.
   void simpleAttackMelee(
      {
        @required double damage,
@@ -171,7 +172,7 @@ void moveRight({double moveSpeed})
      }
   )
   
-  // Executa um ataque a distância. Será adicionado ao game um 'FlyingAttackObject' que é um componente que se moverá pelo mapa na direção configurada e causará dano a aquele que atingir ou se destruir ao se bater em barreiras.
+  // Performs a ranged attack. A 'FlyingAttackObject' will be added to the game, which is a component that will move around the map in the configured direction and will cause damage to those who reach or destroy themselves when hitting barriers.
   void simpleAttackRange(
      {
        @required FlameAnimation.Animation animationRight,
@@ -188,7 +189,7 @@ void moveRight({double moveSpeed})
      }
   )
   
-  // De acordo com o raio configurado o inimigo irá procurar o player, caso o encontre, irá se posicionar para executar um ataque a distância. Ao chegar nessa posição ele notificará pela função 'positioned'.
+  // According to the configured radius, the enemy will search for the player, if it finds it, it will position itself to execute a ranged attack. Upon reaching this position, it will notify by the 'positioned' function.
   void seeAndMoveToAttackRange(
       {
         Function(Player) positioned,
@@ -196,7 +197,7 @@ void moveRight({double moveSpeed})
       }
   )
   
-  // Exibe valor do dano no game com uma animação.
+  // Displays the damage value in the game with an animation.
    void showDamage(
       double damage,
       {
@@ -207,25 +208,22 @@ void moveRight({double moveSpeed})
       }
     )
     
-    // Adicione em 'render' caso deseje desenhar área de colisão.
-    void drawPositionCollision(Canvas canvas)
-    
-    // Caso precise saber em qual direção o player em relação a você.
+    // If you need to know which direction the player is in relation to you.
     Direction directionThatPlayerIs()
     
-    // Caso deseje adicionar uma animação curta (animação sem loop, ele executa somente uma vez).
+    // If you want to add a short animation (animation without loop, it runs only once).
     void addFastAnimation(FlameAnimation.Animation animation)
     
-    // Caso deseje infligir dano a ele.
+    // If you want to inflict damage on him.
     void receiveDamage(double damage)
     
-    // Caso deseje adicionar vida.
+    // If you want to add life.
     void addLife(double life)
     
-    // Adicione em 'render' caso deseje desenhar área de colisão.
+    // Add in 'render' if you want to draw a collision area.
     void drawPositionCollision(Canvas canvas)
 
-    // Desenha a barra padrão de vida. Deve ser utilizado sobrescrevendo o método 'render'.
+    // Draw the standard life bar. It must be used by overriding the 'render' method.
     void drawDefaultLifeBar(
       Canvas canvas,
       {
@@ -238,9 +236,9 @@ void moveRight({double moveSpeed})
 ```
 
 ### Player
-Representa o seu personagem. Nele também existem ações e movimentos prontos para serem utilizados.
+It represents your character. It also has actions and movements ready to be used.
 
-Para criar seu player, você deverá criar uma classe que o represente e extender de ```Player``` como nesse [exemplo](https://github.com/RafaelBarbosatec/bonfire/blob/master/example/lib/player/knight.dart). No construtor você terá os seguintes parâmetros de configuração:
+To create your player, you must create a class that represents it and extends ```Player``` as in this [example](https://github.com/RafaelBarbosatec/bonfire/blob/master/example/lib/player/knight.dart). In the constructor you will have the following configuration parameters:
 
 ```dart
 Knight() : super(
@@ -258,22 +256,22 @@ Knight() : super(
           initDirection: Direction.right,
           life: 200,
           speed: 2.5,
-          collision: Collision(), // Caso deseje editar área de colisão
+          collision: Collision(), // If you want to edit collision area
         );
 ```   
 
-No player, você poderá receber as ações que foram configuradas em seu Joystick (essa configuração você verá com mais detalhes a frente) sobrescrevendo o método:
+In the player, you can receive the actions that have been configured on your Joystick (this configuration you will see in more detail ahead) overriding the method:
 
 ```dart
   @override
   void joystickAction(int action) {}
 ```
 
-Ao perceber o toque nessas ações do joystick, você poderá executar outras ações. Assim como no inimigo, aqui também temos algumas ações prontas para serem utilizadas:
+When you feel the touch on these joystick actions, you can perform other actions. As with the enemy, here we also have some actions ready to be used:
 
 ```dart
   
-  // Executa um ataque físico ao inimigo infligindo o dano configurado com a frequência configurada. Poderá adicionar animações para representar esse ataque.
+  // Performs a physical attack on the enemy inflicting configured damage. You can add animations to represent that attack.
   void simpleAttackMelee(
      {
        @required FlameAnimation.Animation attackEffectRightAnim,

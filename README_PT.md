@@ -42,7 +42,7 @@ Para executar o game com Bonfire, basta utilizar o seguinte widget:
     return BonfireWidget(
       joystick: MyJoystick(), // required
       map: DungeonMap.map(), // required
-      player: Knight(), // Caso o player não seja especificado, o direcional do joystick terá a função de explorar o mapa, sendo bem útil para auxiliar na construção do mapa.
+      player: Knight(), // Caso o player não seja especificado, o direcional do joystick terá a função de explorar o mapa, isso será bem útil para auxiliar na construção do mapa.
       interface: KnightInterface(),
       decorations: DungeonMap.decorations(),
       enemies: DungeonMap.enemies(),
@@ -105,7 +105,7 @@ ou também poderá criar sua própria classe, bastando extender de ```GameDecora
 Neste componente como em todos os demais, você tem acesso ao ```BuildContext``` do Widget que renderiza o game, portanto é possível exibir dialogs, overlays, entre outros componentes do Flutter para exibir algo na tela.
 
 ### Enemy
-É utilizado para representar seus inimigos. Nesse componente existem ações e movimentos prontos para serem utilizados e configurados se quiser. Todavia, caso deseje algo diferente terá a total liberdade de customizar suas ações e movimentos.
+É utilizado para representar aqueles que querem te matar :-). Nesse componente existem ações e movimentos prontos para serem utilizados e configurados se quiser. Todavia, caso deseje algo diferente terá a total liberdade de customizar suas ações e movimentos.
 
 Para criar seu inimigo você deverá criar uma classe que o represente e extenda de ```Enemy``` como nesse [exemplo](https://github.com/RafaelBarbosatec/bonfire/blob/master/example/lib/enemy/goblin.dart). No construtor você terá os seguintes parâmetros de configuração:
 
@@ -207,9 +207,6 @@ void moveRight({double moveSpeed})
          )
       }
     )
-    
-    // Adicione em 'render' caso deseje desenhar área de colisão.
-    void drawPositionCollision(Canvas canvas)
     
     // Caso precise saber em qual direção o player em relação a você.
     Direction directionThatPlayerIs()
