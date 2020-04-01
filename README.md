@@ -10,31 +10,30 @@ EN | [PT](https://github.com/RafaelBarbosatec/bonfire/blob/master/README_PT.md)
 
 # Bonfire
 
-
-Construa games do tipo RPG ou similares explorando o poder do [FlameEngine](https://flame-engine.org/)!
+Build RPG-type games or similar by exploring the power of [FlameEngine](https://flame-engine.org/)!
 
 ![](https://github.com/RafaelBarbosatec/bonfire/blob/master/media/video_example.gif)
 
 [Download Demo](https://github.com/RafaelBarbosatec/bonfire/raw/master/demo/demo.apk)
 
-Você encontra o código completo desse exemplo [aqui](https://github.com/RafaelBarbosatec/bonfire/tree/master/example).
+You can find the complete code for this example [here](https://github.com/RafaelBarbosatec/bonfire/tree/master/example).
 
-## Sumário
-1. [Como funciona?](#como-funciona)
+## Summary
+1. [How it works?](#como-funciona)
    - [Map](#map)
    - [Decorations](#decorations)
    - [Enemy](#enemy)
    - [Player](#player)
    - [Interface](#interface)
    - [Joystick](#joystick)
-4. [Componentes úteis](#componentes-úteis)
-3. [Próximos passos](#próximos-passos)
+4. [Useful components](#componentes-úteis)
+3. [Next steps](#próximos-passos)
 
-## Como funciona?
+## How it works?
 
-Essa ferramenta foi construida utilizando os recursos do [FlameEngine](https://flame-engine.org/) e todos eles estão disponíveis para serem utilizados além dos implementados pelo Bonfire. Por conta disso, recomenda-se dar uma olhadinha no [FlameEngine](https://flame-engine.org/) antes de iniciar a brincadeira com o Bonfire.
+This tool was built using the resources of the [FlameEngine](https://flame-engine.org/) and all of them are available to be used in addition to those implemented by the Bonfire. Because of this, it is recommended to take a look at [FlameEngine](https://flame-engine.org/) before starting to play with Bonfire.
 
-Para executar o game com Bonfire, basta utilizar o seguinte widget:
+To run the game with Bonfire, just use the widget:
 
 ```dart
 @override

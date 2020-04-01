@@ -32,7 +32,7 @@ Você encontra o código completo desse exemplo [aqui](https://github.com/Rafael
 
 ## Como funciona?
 
-Essa ferramenta foi construida utilizando os recursos do [FlameEngine](https://flame-engine.org/) e todos eles estão disponíveis para serem utilizados além dos implementados pelo Bonfire. Por conta disso, recomenda-se dar uma olhadinha no [FlameEngine](https://flame-engine.org/) antes de iniciar a brincadeira com o Bonfire.
+Essa ferramenta foi construída utilizando os recursos do [FlameEngine](https://flame-engine.org/) e todos eles estão disponíveis para serem utilizados além dos implementados pelo Bonfire. Por conta disso, recomenda-se dar uma olhadinha no [FlameEngine](https://flame-engine.org/) antes de iniciar a brincadeira com o Bonfire.
 
 Para executar o game com Bonfire, basta utilizar o seguinte widget:
 
