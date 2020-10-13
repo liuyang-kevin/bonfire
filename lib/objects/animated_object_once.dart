@@ -5,8 +5,9 @@ import 'package:bonfire/bonfire.dart';
 import 'package:bonfire/lighting/lighting.dart';
 import 'package:bonfire/lighting/lighting_config.dart';
 import 'package:bonfire/objects/animated_object.dart';
-import 'package:flame/animation.dart' as FlameAnimation;
+import 'package:little_engine/little_engine.dart';
 
+/// 一次性动画对象
 class AnimatedObjectOnce extends AnimatedObject with Lighting {
   final VoidCallback onFinish;
   final VoidCallback onStartAnimation;
@@ -16,7 +17,7 @@ class AnimatedObjectOnce extends AnimatedObject with Lighting {
 
   AnimatedObjectOnce({
     Rect position,
-    FlameAnimation.Animation animation,
+    LEFrameAnimation animation,
     this.onFinish,
     this.onStartAnimation,
     this.rotateRadAngle,
@@ -27,19 +28,20 @@ class AnimatedObjectOnce extends AnimatedObject with Lighting {
   }
 
   @override
-  void render(Canvas canvas) {
+  void render(Canvas canvas, Offset offset) {
     if (this.position == null) return;
     if (rotateRadAngle != null) {
       canvas.save();
       canvas.translate(position.center.dx, position.center.dy);
       canvas.rotate(rotateRadAngle == 0.0 ? 0.0 : rotateRadAngle + (pi / 2));
       canvas.translate(-position.center.dx, -position.center.dy);
-      super.render(canvas);
+      super.render(canvas, offset);
       canvas.restore();
     } else {
-      super.render(canvas);
+      super.render(canvas, offset);
     }
-    if (animation.done()) {
+    if (animation.isLastFrame) {
+      // 最后一帧就可以移除了
       if (onFinish != null) onFinish();
       remove();
     }
@@ -48,7 +50,7 @@ class AnimatedObjectOnce extends AnimatedObject with Lighting {
   @override
   void update(double dt) {
     super.update(dt);
-    if (animation != null && !destroy()) {
+    if (animation != null && !willDestroy()) {
       if (animation.currentIndex == 1 && !_notifyStart) {
         _notifyStart = true;
         if (onStartAnimation != null) onStartAnimation();

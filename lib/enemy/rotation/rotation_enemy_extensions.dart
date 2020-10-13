@@ -7,10 +7,9 @@ import 'package:bonfire/objects/animated_object_once.dart';
 import 'package:bonfire/objects/flying_attack_angle_object.dart';
 import 'package:bonfire/player/player.dart';
 import 'package:bonfire/util/collision/collision.dart';
-import 'package:flame/animation.dart' as FlameAnimation;
-import 'package:flame/position.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:little_engine/little_engine.dart';
 
 extension RotationEnemyExtensions on RotationEnemy {
   void seeAndMoveToPlayer({
@@ -18,9 +17,7 @@ extension RotationEnemyExtensions on RotationEnemy {
     double radiusVision = 32,
     double margin = 10,
   }) {
-    if ((this.collisionOnlyVisibleScreen && !isVisibleInCamera()) ||
-        isDead ||
-        this.position == null) return;
+    if ((this.collisionOnlyVisibleScreen && !isVisibleInCamera()) || isDead || this.position == null) return;
     seePlayer(
       radiusVision: radiusVision,
       observed: (player) {
@@ -51,12 +48,8 @@ extension RotationEnemyExtensions on RotationEnemy {
   }
 
   void seeAndMoveToAttackRange(
-      {Function(Player) positioned,
-      double radiusVision = 32,
-      double minDistanceCellsFromPlayer}) {
-    if ((this.collisionOnlyVisibleScreen && !isVisibleInCamera()) ||
-        isDead ||
-        this.position == null) return;
+      {Function(Player) positioned, double radiusVision = 32, double minDistanceCellsFromPlayer}) {
+    if ((this.collisionOnlyVisibleScreen && !isVisibleInCamera()) || isDead || this.position == null) return;
     seePlayer(
       radiusVision: radiusVision,
       observed: (player) {
@@ -65,9 +58,8 @@ extension RotationEnemyExtensions on RotationEnemy {
         double distance = (minDistanceCellsFromPlayer ?? radiusVision);
         double _radAngle = getAngleFomPlayer();
 
-        Position myPosition = Position.fromOffset(this.position.center);
-        Position playerPosition =
-            Position.fromOffset(player.rectCollision.center);
+        LEPosition myPosition = LEPosition.fromOffset(this.position.center);
+        LEPosition playerPosition = LEPosition.fromOffset(player.rectCollision.center);
         double dist = myPosition.distance(playerPosition);
 
         if (dist >= distance) {
@@ -76,8 +68,7 @@ extension RotationEnemyExtensions on RotationEnemy {
           return;
         }
 
-        this.moveFromAngleDodgeObstacles(speed, getInverseAngleFomPlayer(),
-            notMove: () {
+        this.moveFromAngleDodgeObstacles(speed, getInverseAngleFomPlayer(), notMove: () {
           this.idle();
         });
       },
@@ -88,7 +79,7 @@ extension RotationEnemyExtensions on RotationEnemy {
   }
 
   void simpleAttackMelee({
-    @required FlameAnimation.Animation attackEffectTopAnim,
+    @required LEFrameAnimation attackEffectTopAnim,
     @required double damage,
     int id,
     double heightArea = 32,
@@ -110,24 +101,20 @@ extension RotationEnemyExtensions on RotationEnemy {
     double nextY = this.height * sin(angle);
     Offset nextPoint = Offset(nextX, nextY);
 
-    Offset diffBase = Offset(this.position.center.dx + nextPoint.dx,
-            this.position.center.dy + nextPoint.dy) -
-        this.position.center;
+    Offset diffBase =
+        Offset(this.position.center.dx + nextPoint.dx, this.position.center.dy + nextPoint.dy) - this.position.center;
 
     Rect positionAttack = this.position.shift(diffBase);
 
-    gameRef.addLater(AnimatedObjectOnce(
-      animation: attackEffectTopAnim,
-      position: positionAttack,
-      rotateRadAngle: angle,
-    ));
+    gameRef.addComponentLater(
+      AnimatedObjectOnce(animation: attackEffectTopAnim, position: positionAttack, rotateRadAngle: angle),
+    );
 
     if (positionAttack.overlaps(player.position)) {
       player.receiveDamage(damage, id);
 
       if (withPush) {
-        Rect rectAfterPush =
-            player.position.translate(diffBase.dx, diffBase.dy);
+        Rect rectAfterPush = player.position.translate(diffBase.dx, diffBase.dy);
         if (!player.isCollision(displacement: rectAfterPush)) {
           player.position = rectAfterPush;
         }
@@ -138,8 +125,8 @@ extension RotationEnemyExtensions on RotationEnemy {
   }
 
   void simpleAttackRange({
-    @required FlameAnimation.Animation animationTop,
-    @required FlameAnimation.Animation animationDestroy,
+    @required LEFrameAnimation animationTop,
+    @required LEFrameAnimation animationDestroy,
     @required double width,
     @required double height,
     int id,
@@ -164,14 +151,13 @@ extension RotationEnemyExtensions on RotationEnemy {
     double nextY = this.height * sin(_radAngle);
     Offset nextPoint = Offset(nextX, nextY);
 
-    Offset diffBase = Offset(this.position.center.dx + nextPoint.dx,
-            this.position.center.dy + nextPoint.dy) -
-        this.position.center;
+    Offset diffBase =
+        Offset(this.position.center.dx + nextPoint.dx, this.position.center.dy + nextPoint.dy) - this.position.center;
 
     Rect position = this.position.shift(diffBase);
-    gameRef.addLater(FlyingAttackAngleObject(
+    gameRef.addComponentLater(FlyingAttackAngleObject(
       id: id,
-      initPosition: Position(position.left, position.top),
+      initPosition: LEPosition(position.left, position.top),
       radAngle: _radAngle,
       width: width,
       height: height,

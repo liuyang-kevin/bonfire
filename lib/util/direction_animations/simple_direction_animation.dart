@@ -3,30 +3,33 @@ import 'dart:ui';
 import 'package:bonfire/bonfire.dart';
 import 'package:bonfire/objects/animated_object_once.dart';
 import 'package:bonfire/util/direction_animations/simple_animation_enum.dart';
-import 'package:flame/animation.dart';
 import 'package:flutter/foundation.dart';
+import 'package:little_engine/little_engine.dart';
 
+/// 多方向,位图动画
+///
+/// 人物上下左右,移动,等形象
 class SimpleDirectionAnimation {
-  final Animation idleLeft;
-  final Animation idleRight;
-  final Animation idleTop;
-  final Animation idleBottom;
-  final Animation idleTopLeft;
-  final Animation idleTopRight;
-  final Animation idleBottomLeft;
-  final Animation idleBottomRight;
-  final Animation runTop;
-  final Animation runRight;
-  final Animation runBottom;
-  final Animation runLeft;
-  final Animation runTopLeft;
-  final Animation runTopRight;
-  final Animation runBottomLeft;
-  final Animation runBottomRight;
-  final Map<String, Animation> others;
+  final LEFrameAnimation idleLeft;
+  final LEFrameAnimation idleRight;
+  final LEFrameAnimation idleTop;
+  final LEFrameAnimation idleBottom;
+  final LEFrameAnimation idleTopLeft;
+  final LEFrameAnimation idleTopRight;
+  final LEFrameAnimation idleBottomLeft;
+  final LEFrameAnimation idleBottomRight;
+  final LEFrameAnimation runTop;
+  final LEFrameAnimation runRight;
+  final LEFrameAnimation runBottom;
+  final LEFrameAnimation runLeft;
+  final LEFrameAnimation runTopLeft;
+  final LEFrameAnimation runTopRight;
+  final LEFrameAnimation runBottomLeft;
+  final LEFrameAnimation runBottomRight;
+  final Map<String, LEFrameAnimation> others;
   final SimpleAnimationEnum init;
 
-  Animation current;
+  LEFrameAnimation current;
   SimpleAnimationEnum _currentType;
   AnimatedObjectOnce _fastAnimation;
   bool runToTheEndFastAnimation = false;
@@ -122,7 +125,7 @@ class SimpleDirectionAnimation {
   }
 
   void playOnce(
-    Animation animation, {
+    LEFrameAnimation animation, {
     VoidCallback onFinish,
     bool runToTheEnd = false,
   }) {
@@ -136,12 +139,12 @@ class SimpleDirectionAnimation {
     );
   }
 
-  void render(Canvas canvas) {
+  void render(Canvas canvas, Offset offset) {
     if (position == null) return;
     if (_fastAnimation != null) {
-      _fastAnimation.render(canvas);
+      _fastAnimation.render(canvas, offset);
     } else {
-      if (current?.loaded() == true) {
+      if (current?.loaded == true) {
         current.getSprite().renderRect(canvas, position);
       }
     }

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:bonfire/bonfire.dart';
 import 'package:example/player/knight.dart';
 import 'package:flutter/material.dart';
+import 'package:little_engine/little_engine.dart';
 
 class BarLifeComponent extends InterfaceComponent {
   double padding = 20;
@@ -17,7 +18,7 @@ class BarLifeComponent extends InterfaceComponent {
   BarLifeComponent()
       : super(
           id: 1,
-          position: Position(20, 20),
+          position: LEPosition(20, 20),
           sprite: Sprite('health_ui.png'),
           width: 120,
           height: 40,
@@ -36,12 +37,12 @@ class BarLifeComponent extends InterfaceComponent {
   }
 
   @override
-  void render(Canvas c) {
+  void render(Canvas c, Offset offset) {
     try {
       _drawLife(c);
       _drawStamina(c);
     } catch (e) {}
-    super.render(c);
+    super.render(c, offset);
   }
 
   void _drawLife(Canvas canvas) {

@@ -1,10 +1,10 @@
 import 'package:bonfire/base/rpg_game.dart';
-import 'package:flame/components/mixins/has_game_ref.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:little_engine/little_engine.dart';
 
-class GameColorFilter with HasGameRef<RPGGame> {
+class GameColorFilter with StitchUpEngineRef<RPGGameEngine> {
   Color color;
   BlendMode blendMode;
   ColorTween _tween;
@@ -22,15 +22,14 @@ class GameColorFilter with HasGameRef<RPGGame> {
     this.blendMode = blendMode;
     _tween = ColorTween(begin: this.color ?? Colors.transparent, end: color);
 
-    gameRef.getValueGenerator(
-      duration ?? Duration(seconds: 1),
-      onChange: (value) {
-        this.color = _tween.transform(value);
-      },
-      onFinish: () {
-        this.color = color;
-      },
-      curve: curve,
-    ).start();
+    //
+    gameRef
+        .getValueGenerator(
+          duration ?? Duration(seconds: 1),
+          onChange: (value) => this.color = _tween.transform(value),
+          onFinish: () => this.color = color,
+          curve: curve,
+        )
+        .start();
   }
 }

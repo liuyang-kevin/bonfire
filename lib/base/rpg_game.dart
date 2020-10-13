@@ -7,7 +7,6 @@ import 'package:bonfire/game_interface/game_interface.dart';
 import 'package:bonfire/joystick/joystick_controller.dart';
 import 'package:bonfire/lighting/lighting.dart';
 import 'package:bonfire/lighting/lighting_component.dart';
-import 'package:bonfire/map/map_game.dart';
 import 'package:bonfire/player/player.dart';
 import 'package:bonfire/util/camera/camera.dart';
 import 'package:bonfire/util/color_filter_component.dart';
@@ -15,19 +14,20 @@ import 'package:bonfire/util/game_color_filter.dart';
 import 'package:bonfire/util/game_controller.dart';
 import 'package:bonfire/util/interval_tick.dart';
 import 'package:bonfire/util/map_explorer.dart';
-import 'package:bonfire/util/mixins/attackable.dart';
+import 'package:bonfire/util/mixin/attacker.dart';
 import 'package:bonfire/util/value_generator_component.dart';
-import 'package:flame/components/component.dart';
-import 'package:flame/keyboard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:little_engine/little_engine.dart' hide JoystickController;
 
-class RPGGame extends BaseGamePointerDetector with KeyboardEvents {
+import 'base_game_point_detector.dart';
+
+class RPGGameEngine extends RPGBaseEngine with KeyboardEvents {
   final BuildContext context;
   final Player player;
   final GameInterface interface;
-  final MapGame map;
+  final MapComp map;
   final JoystickController joystickController;
   final GameComponent background;
   final bool constructionMode;
@@ -41,18 +41,17 @@ class RPGGame extends BaseGamePointerDetector with KeyboardEvents {
   Iterable<Enemy> _enemies = List();
   Iterable<Enemy> _visibleEnemies = List();
   Iterable<Enemy> _livingEnemies = List();
-  Iterable<Attackable> _attackables = List();
+  Iterable<StitchAttacker> _attackers = List();
   Iterable<GameDecoration> _decorations = List();
   Iterable<GameDecoration> _visibleDecorations = List();
   Iterable<Lighting> _visibleLights = List();
   Iterable<GameComponent> _visibleComponents = List();
   Iterable<Sensor> _visibleSensors = List();
   IntervalTick _interval;
-  ColorFilterComponent _colorFilterComponent =
-      ColorFilterComponent(GameColorFilter());
+  ColorFilterComponent _colorFilterComponent = ColorFilterComponent(GameColorFilter());
   LightingComponent lighting;
 
-  RPGGame({
+  RPGGameEngine({
     @required this.context,
     this.map,
     this.joystickController,
@@ -74,10 +73,11 @@ class RPGGame extends BaseGamePointerDetector with KeyboardEvents {
     Size cameraSizeMovementWindow = const Size(50, 50),
     bool cameraMoveOnlyMapArea = false,
   }) : assert(context != null) {
-    if (colorFilter != null)
-      _colorFilterComponent = ColorFilterComponent(colorFilter);
+    //region 色彩过滤
+    if (colorFilter != null) _colorFilterComponent = ColorFilterComponent(colorFilter);
     _colorFilterComponent.gameRef = this;
-    super.add(_colorFilterComponent);
+    super.addComponent(_colorFilterComponent);
+    //endregion
     gameCamera = Camera(
       zoom: cameraZoom ?? 1.0,
       sizeMovementWindow: cameraSizeMovementWindow,
@@ -86,16 +86,16 @@ class RPGGame extends BaseGamePointerDetector with KeyboardEvents {
     );
     gameCamera.gameRef = this;
     gameController?.gameRef = this;
-    if (background != null) super.add(background);
-    if (map != null) super.add(map);
-    decorations?.forEach((decoration) => super.add(decoration));
-    enemies?.forEach((enemy) => super.add(enemy));
-    components?.forEach((comp) => super.add(comp));
-    if (player != null) super.add(player);
+    if (background != null) super.addComponent(background); // 背景
+    if (map != null) super.addComponent(map); // 地图
+    decorations?.forEach((decoration) => super.addComponent(decoration)); // 装饰器
+    enemies?.forEach((enemy) => super.addComponent(enemy)); // 敌人
+    components?.forEach((comp) => super.addComponent(comp)); // 其他组件?
+    if (player != null) super.addComponent(player); // 玩家
     lighting = LightingComponent(color: lightingColorGame);
-    super.add(lighting);
-    super.add((interface ?? GameInterface()));
-    super.add(joystickController ?? Joystick());
+    super.addComponent(lighting); // 视野,光源
+    super.addComponent((interface ?? GameInterface())); // 输入组件
+    super.addComponent(joystickController ?? Joystick()); // 虚拟摇杆
     joystickController?.addObserver(player ?? MapExplorer(gameCamera));
     _interval = IntervalTick(200, tick: _updateTempList);
   }
@@ -107,12 +107,7 @@ class RPGGame extends BaseGamePointerDetector with KeyboardEvents {
   }
 
   void addGameComponent(GameComponent component) {
-    addLater(component);
-  }
-
-  @override
-  void add(Component c) {
-    addLater(c);
+    addComponentLater(component);
   }
 
   Iterable<GameComponent> visibleComponents() => _visibleComponents;
@@ -128,7 +123,7 @@ class RPGGame extends BaseGamePointerDetector with KeyboardEvents {
 
   Iterable<Lighting> lightVisible() => _visibleLights;
 
-  Iterable<Attackable> attackables() => _attackables;
+  Iterable<StitchAttacker> attackers() => _attackers;
   Iterable<Sensor> visibleSensors() => _visibleSensors;
 
   ValueGeneratorComponent getValueGenerator(
@@ -147,7 +142,7 @@ class RPGGame extends BaseGamePointerDetector with KeyboardEvents {
       onFinish: onFinish,
       onChange: onChange,
     );
-    add(valueGenerator);
+    addComponentLater(valueGenerator);
     return valueGenerator;
   }
 
@@ -180,15 +175,12 @@ class RPGGame extends BaseGamePointerDetector with KeyboardEvents {
       return element.isVisibleInCamera();
     });
 
-    _visibleSensors =
-        _visibleComponents.where((element) => (element is Sensor)).cast();
-    _attackables =
-        _visibleComponents.where((element) => (element is Attackable)).cast();
+    _visibleSensors = _visibleComponents.where((element) => (element is Sensor)).cast();
+    _attackers = _visibleComponents.where((element) => (element is StitchAttacker)).cast();
 
     if (lightingColorGame != null) {
       _visibleLights = components.where((element) {
-        return element is Lighting &&
-            (element as Lighting).isVisible(gameCamera);
+        return element is Lighting && (element as Lighting).isVisible(gameCamera);
       }).cast();
     }
 
@@ -196,7 +188,7 @@ class RPGGame extends BaseGamePointerDetector with KeyboardEvents {
   }
 
   @override
-  bool recordFps() => showFPS;
+  bool get recordFps => showFPS;
 
   GameColorFilter get colorFilter => _colorFilterComponent.colorFilter;
 }

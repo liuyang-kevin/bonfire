@@ -1,18 +1,19 @@
 import 'package:bonfire/bonfire.dart';
-import 'package:flame/animation.dart' as FlameAnimation;
+import 'package:bonfire/joystick/joystick_controller.dart';
+import 'package:little_engine/little_engine.dart' hide JoystickDirectionalEvent, JoystickActionEvent, ActionEvent;
 
 class TestRotationPlayer extends RotationPlayer {
   double initSpeed = 150;
-  TestRotationPlayer(Position position)
+  TestRotationPlayer(LEPosition position)
       : super(
           initPosition: position,
-          animIdle: FlameAnimation.Animation.sequenced(
+          animIdle: LEFrameAnimation.sequenced(
             "player/knight_idle_left.png",
             6,
             textureWidth: 16,
             textureHeight: 16,
           ),
-          animRun: FlameAnimation.Animation.sequenced(
+          animRun: LEFrameAnimation.sequenced(
             "player/knight_run.png",
             6,
             textureWidth: 16,
@@ -33,7 +34,7 @@ class TestRotationPlayer extends RotationPlayer {
     remove();
     gameRef.addGameComponent(
       GameDecoration(
-        initPosition: Position(
+        initPosition: LEPosition(
           position.left,
           position.top,
         ),
@@ -59,13 +60,13 @@ class TestRotationPlayer extends RotationPlayer {
 
   void actionAttackRange() {
     this.simpleAttackRange(
-        animationTop: FlameAnimation.Animation.sequenced(
+        animationTop: LEFrameAnimation.sequenced(
           'player/fireball_top.png',
           3,
           textureWidth: 23,
           textureHeight: 23,
         ),
-        animationDestroy: FlameAnimation.Animation.sequenced(
+        animationDestroy: LEFrameAnimation.sequenced(
           'player/explosion_fire.png',
           6,
           textureWidth: 32,
@@ -80,7 +81,7 @@ class TestRotationPlayer extends RotationPlayer {
 
   void actionAttackMelee() {
     this.simpleAttackMelee(
-      animationTop: FlameAnimation.Animation.sequenced(
+      animationTop: LEFrameAnimation.sequenced(
         'player/atack_effect_top.png',
         6,
         textureWidth: 16,

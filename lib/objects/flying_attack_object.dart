@@ -5,20 +5,20 @@ import 'package:bonfire/objects/animated_object.dart';
 import 'package:bonfire/objects/animated_object_once.dart';
 import 'package:bonfire/util/collision/object_collision.dart';
 import 'package:bonfire/util/direction.dart';
-import 'package:flame/animation.dart' as FlameAnimation;
-import 'package:flame/position.dart';
 import 'package:flutter/widgets.dart';
+import 'package:little_engine/little_engine.dart';
 
+/// 飞行攻击对象
 class FlyingAttackObject extends AnimatedObject with ObjectCollision, Lighting {
   final dynamic id;
-  final FlameAnimation.Animation flyAnimation;
-  final FlameAnimation.Animation destroyAnimation;
+  final LEFrameAnimation flyAnimation;
+  final LEFrameAnimation destroyAnimation;
   final Direction direction;
   final double speed;
   final double damage;
   final double width;
   final double height;
-  final Position initPosition;
+  final LEPosition initPosition;
   final bool damageInPlayer;
   final bool withCollision;
   final bool collisionOnlyVisibleObjects;
@@ -52,9 +52,7 @@ class FlyingAttackObject extends AnimatedObject with ObjectCollision, Lighting {
       height,
     );
 
-    this.collisions = [
-      collision ?? Collision(width: width, height: height / 2)
-    ];
+    this.collisions = [collision ?? Collision(width: width, height: height / 2)];
   }
 
   @override
@@ -96,8 +94,8 @@ class FlyingAttackObject extends AnimatedObject with ObjectCollision, Lighting {
   }
 
   @override
-  void render(Canvas canvas) {
-    super.render(canvas);
+  void render(Canvas canvas, Offset offset) {
+    super.render(canvas, offset);
     if (gameRef != null && gameRef.showCollisionArea) {
       drawCollision(canvas, position, gameRef.collisionAreaColor);
     }
@@ -120,11 +118,7 @@ class FlyingAttackObject extends AnimatedObject with ObjectCollision, Lighting {
         destroy = true;
       }
     } else {
-      gameRef
-          .attackables()
-          .where((a) =>
-              !a.isAttackablePlayer && a.rectAttackable().overlaps(position))
-          .forEach((enemy) {
+      gameRef.attackers().where((a) => !a.isAttackPlayer && a.attackScope.overlaps(position)).forEach((enemy) {
         enemy.receiveDamage(damage, id);
         destroy = true;
       });
@@ -199,13 +193,8 @@ class FlyingAttackObject extends AnimatedObject with ObjectCollision, Lighting {
             );
             break;
         }
-
-        gameRef.addLater(
-          AnimatedObjectOnce(
-            animation: destroyAnimation,
-            position: positionDestroy,
-            lightingConfig: lightingConfig,
-          ),
+        gameRef.addComponentLater(
+          AnimatedObjectOnce(animation: destroyAnimation, position: positionDestroy, lightingConfig: lightingConfig),
         );
       }
       remove();

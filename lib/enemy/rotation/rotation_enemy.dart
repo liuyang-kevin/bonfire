@@ -2,22 +2,21 @@ import 'dart:math';
 
 import 'package:bonfire/enemy/enemy.dart';
 import 'package:bonfire/util/collision/collision.dart';
-import 'package:flame/animation.dart' as FlameAnimation;
-import 'package:flame/position.dart';
 import 'package:flutter/widgets.dart';
+import 'package:little_engine/little_engine.dart';
 
 class RotationEnemy extends Enemy {
-  final FlameAnimation.Animation animIdle;
-  final FlameAnimation.Animation animRun;
+  final LEFrameAnimation animIdle;
+  final LEFrameAnimation animRun;
 
-  FlameAnimation.Animation animation;
+  LEFrameAnimation animation;
 
   /// Variable that represents the speed of the enemy.
   final double speed;
   double currentRadAngle;
 
   RotationEnemy({
-    @required Position initPosition,
+    @required LEPosition initPosition,
     @required this.animIdle,
     @required this.animRun,
     double height = 32,
@@ -26,25 +25,19 @@ class RotationEnemy extends Enemy {
     this.speed = 100,
     double life = 100,
     Collision collision,
-  }) : super(
-            initPosition: initPosition,
-            height: height,
-            width: width,
-            life: life,
-            collision: collision) {
+  }) : super(initPosition: initPosition, height: height, width: width, life: life, collision: collision) {
     idle();
   }
 
   @override
-  void moveFromAngleDodgeObstacles(double speed, double angle,
-      {Function notMove}) {
+  void moveFromAngleDodgeObstacles(double speed, double angle, {Function notMove}) {
     this.animation = animRun;
     currentRadAngle = angle;
     super.moveFromAngleDodgeObstacles(speed, angle, notMove: notMove);
   }
 
   @override
-  void render(Canvas canvas) {
+  void render(Canvas canvas, Offset offset) {
     if (this.isVisibleInCamera()) {
       canvas.save();
       canvas.translate(position.center.dx, position.center.dy);
@@ -69,7 +62,7 @@ class RotationEnemy extends Enemy {
 
   void _renderAnimation(Canvas canvas) {
     if (animation == null || position == null) return;
-    if (animation.loaded()) {
+    if (animation.loaded) {
       animation.getSprite().renderRect(canvas, position);
     }
   }

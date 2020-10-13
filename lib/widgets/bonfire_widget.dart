@@ -1,10 +1,10 @@
 import 'package:bonfire/base/game_component.dart';
 import 'package:bonfire/base/rpg_game.dart';
+import 'package:bonfire/bonfire.dart';
 import 'package:bonfire/decoration/decoration.dart';
 import 'package:bonfire/enemy/enemy.dart';
 import 'package:bonfire/game_interface/game_interface.dart';
 import 'package:bonfire/joystick/joystick_controller.dart';
-import 'package:bonfire/map/map_game.dart';
 import 'package:bonfire/player/player.dart';
 import 'package:bonfire/util/game_color_filter.dart';
 import 'package:bonfire/util/game_controller.dart';
@@ -14,7 +14,7 @@ class BonfireWidget extends StatefulWidget {
   final JoystickController joystick;
   final Player player;
   final GameInterface interface;
-  final MapGame map;
+  final MapComp map;
   final List<Enemy> enemies;
   final List<GameDecoration> decorations;
   final GameComponent background;
@@ -57,7 +57,7 @@ class BonfireWidget extends StatefulWidget {
 }
 
 class _BonfireWidgetState extends State<BonfireWidget> {
-  RPGGame _game;
+  RPGGameEngine _game;
 
   @override
   void didUpdateWidget(BonfireWidget oldWidget) {
@@ -65,19 +65,17 @@ class _BonfireWidgetState extends State<BonfireWidget> {
       if (_game.map != null) _game.map.updateTiles(widget.map.tiles);
 
       _game.decorations().forEach((d) => d.remove());
-      if (widget.decorations != null)
-        widget.decorations.forEach((d) => _game.addGameComponent(d));
+      if (widget.decorations != null) widget.decorations.forEach((d) => _game.addGameComponent(d));
 
       _game.enemies().forEach((e) => e.remove());
-      if (widget.enemies != null)
-        widget.enemies.forEach((e) => _game.addGameComponent(e));
+      if (widget.enemies != null) widget.enemies.forEach((e) => _game.addGameComponent(e));
     }
     super.didUpdateWidget(oldWidget);
   }
 
   @override
   void initState() {
-    _game = RPGGame(
+    _game = RPGGameEngine(
       context: context,
       joystickController: widget.joystick,
       player: widget.player,
@@ -90,10 +88,8 @@ class _BonfireWidgetState extends State<BonfireWidget> {
       showCollisionArea: widget.showCollisionArea,
       showFPS: widget.showFPS,
       gameController: widget.gameController,
-      constructionModeColor:
-          widget.constructionModeColor ?? Colors.cyan.withOpacity(0.5),
-      collisionAreaColor:
-          widget.collisionAreaColor ?? Colors.lightGreenAccent.withOpacity(0.5),
+      constructionModeColor: widget.constructionModeColor ?? Colors.cyan.withOpacity(0.5),
+      collisionAreaColor: widget.collisionAreaColor ?? Colors.lightGreenAccent.withOpacity(0.5),
       lightingColorGame: widget.lightingColorGame,
       cameraZoom: widget.cameraZoom,
       cameraSizeMovementWindow: widget.cameraSizeMovementWindow,
@@ -104,7 +100,5 @@ class _BonfireWidgetState extends State<BonfireWidget> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return _game.widget;
-  }
+  Widget build(BuildContext context) => _game.widget;
 }

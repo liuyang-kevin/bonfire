@@ -4,20 +4,21 @@ import 'package:bonfire/base/game_component.dart';
 import 'package:bonfire/decoration/decoration.dart';
 import 'package:bonfire/player/player.dart';
 import 'package:bonfire/util/priority_layer.dart';
-import 'package:flame/animation.dart' as FlameAnimation;
+import 'package:little_engine/little_engine.dart';
 
+///
 /// This represents a Component for your game in bonfire.
 ///
 /// All components like [Enemy],[Player] and [GameDecoration] extends this.
 class AnimatedObject extends GameComponent {
   /// Animation that will be drawn on the screen.
-  FlameAnimation.Animation animation;
+  LEFrameAnimation animation;
 
   @override
-  void render(Canvas canvas) {
-    super.render(canvas);
+  void render(Canvas canvas, Offset offset) {
+    super.render(canvas, offset);
     if (animation == null || position == null) return;
-    if (animation.loaded()) {
+    if (animation.loaded) {
       animation.getSprite().renderRect(canvas, position);
     }
   }
@@ -29,5 +30,5 @@ class AnimatedObject extends GameComponent {
   }
 
   @override
-  int priority() => PriorityLayer.OBJECTS;
+  int get priority => PriorityLayer.OBJECTS;
 }

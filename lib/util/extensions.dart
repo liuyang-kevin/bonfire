@@ -1,11 +1,10 @@
 import 'dart:ui';
 
-import 'package:bonfire/bonfire.dart';
-import 'package:flame/animation.dart' as FlameAnimation;
 import 'package:flutter/foundation.dart';
+import 'package:little_engine/little_engine.dart';
 
 extension ImageExtension on Image {
-  FlameAnimation.Animation getAnimation({
+  LEFrameAnimation getAnimation({
     @required double width,
     @required double height,
     @required double count,
@@ -24,7 +23,7 @@ extension ImageExtension on Image {
         height: height,
       ));
     }
-    return FlameAnimation.Animation.spriteList(
+    return LEFrameAnimation.spriteList(
       spriteList,
       loop: loop,
       stepTime: stepTime,

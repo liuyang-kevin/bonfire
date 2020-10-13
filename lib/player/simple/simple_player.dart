@@ -1,6 +1,9 @@
 import 'package:bonfire/bonfire.dart';
+import 'package:bonfire/joystick/joystick_controller.dart';
 import 'package:bonfire/util/direction_animations/simple_direction_animation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:little_engine/little_engine.dart'
+    hide JoystickMoveDirectional, JoystickDirectionalEvent, JoystickActionEvent, ActionEvent;
 
 class SimplePlayer extends Player {
   static const REDUCTION_SPEED_DIAGONAL = 0.7;
@@ -16,7 +19,7 @@ class SimplePlayer extends Player {
   double speed;
 
   SimplePlayer({
-    @required Position initPosition,
+    @required LEPosition initPosition,
     @required this.animation,
     Direction initDirection = Direction.right,
     this.speed = 150,
@@ -35,9 +38,8 @@ class SimplePlayer extends Player {
     lastDirection = initDirection;
     if (initDirection == Direction.left || initDirection == Direction.right) {
       lastDirectionHorizontal = initDirection;
-      statusMoveDirectional = initDirection == Direction.left
-          ? JoystickMoveDirectional.MOVE_LEFT
-          : JoystickMoveDirectional.MOVE_RIGHT;
+      statusMoveDirectional =
+          initDirection == Direction.left ? JoystickMoveDirectional.MOVE_LEFT : JoystickMoveDirectional.MOVE_RIGHT;
     }
     idle();
   }
@@ -48,9 +50,9 @@ class SimplePlayer extends Player {
   }
 
   @override
-  void render(Canvas canvas) {
-    animation?.render(canvas);
-    super.render(canvas);
+  void render(Canvas canvas, Offset offset) {
+    animation?.render(canvas, offset);
+    super.render(canvas, offset);
   }
 
   @override
@@ -97,8 +99,7 @@ class SimplePlayer extends Player {
       lastDirection = Direction.top;
     }
 
-    double speed =
-        (isDiagonal ? this.speed * REDUCTION_SPEED_DIAGONAL : this.speed);
+    double speed = (isDiagonal ? this.speed * REDUCTION_SPEED_DIAGONAL : this.speed);
 
     this.moveTop(speed);
   }
@@ -118,16 +119,13 @@ class SimplePlayer extends Player {
   }
 
   void customMoveRight({bool addAnimation = true, bool isDiagonal = false}) {
-    if (statusMoveDirectional != JoystickMoveDirectional.MOVE_RIGHT &&
-        animation?.runRight != null &&
-        addAnimation) {
+    if (statusMoveDirectional != JoystickMoveDirectional.MOVE_RIGHT && animation?.runRight != null && addAnimation) {
       animation?.play(SimpleAnimationEnum.runRight);
       statusMoveDirectional = JoystickMoveDirectional.MOVE_RIGHT;
       lastDirection = Direction.right;
       lastDirectionHorizontal = Direction.right;
     }
-    double speed =
-        (isDiagonal ? this.speed * REDUCTION_SPEED_DIAGONAL : this.speed);
+    double speed = (isDiagonal ? this.speed * REDUCTION_SPEED_DIAGONAL : this.speed);
 
     this.moveRight(speed);
   }
@@ -139,8 +137,7 @@ class SimplePlayer extends Player {
       lastDirection = Direction.bottom;
     }
 
-    double speed =
-        (isDiagonal ? this.speed * REDUCTION_SPEED_DIAGONAL : this.speed);
+    double speed = (isDiagonal ? this.speed * REDUCTION_SPEED_DIAGONAL : this.speed);
 
     this.moveBottom(speed);
   }
@@ -160,24 +157,20 @@ class SimplePlayer extends Player {
   }
 
   void customMoveLeft({bool addAnimation = true, bool isDiagonal = false}) {
-    if (statusMoveDirectional != JoystickMoveDirectional.MOVE_LEFT &&
-        animation.runLeft != null &&
-        addAnimation) {
+    if (statusMoveDirectional != JoystickMoveDirectional.MOVE_LEFT && animation.runLeft != null && addAnimation) {
       animation?.play(SimpleAnimationEnum.runLeft);
       statusMoveDirectional = JoystickMoveDirectional.MOVE_LEFT;
       lastDirection = Direction.left;
       lastDirectionHorizontal = Direction.left;
     }
 
-    double speed =
-        (isDiagonal ? this.speed * REDUCTION_SPEED_DIAGONAL : this.speed);
+    double speed = (isDiagonal ? this.speed * REDUCTION_SPEED_DIAGONAL : this.speed);
 
     this.moveLeft(speed);
   }
 
   void customMoveUpLeft() {
-    if (animation.runTopLeft != null &&
-        statusMoveDirectional != JoystickMoveDirectional.MOVE_UP_LEFT) {
+    if (animation.runTopLeft != null && statusMoveDirectional != JoystickMoveDirectional.MOVE_UP_LEFT) {
       animation?.play(SimpleAnimationEnum.runTopLeft);
       lastDirection = Direction.topLeft;
       statusMoveDirectional = JoystickMoveDirectional.MOVE_UP_LEFT;
@@ -193,8 +186,7 @@ class SimplePlayer extends Player {
   }
 
   void customMoveUpRight() {
-    if (animation?.runTopRight != null &&
-        statusMoveDirectional != JoystickMoveDirectional.MOVE_UP_RIGHT) {
+    if (animation?.runTopRight != null && statusMoveDirectional != JoystickMoveDirectional.MOVE_UP_RIGHT) {
       animation?.play(SimpleAnimationEnum.runTopRight);
       lastDirection = Direction.topRight;
       statusMoveDirectional = JoystickMoveDirectional.MOVE_UP_RIGHT;
@@ -210,8 +202,7 @@ class SimplePlayer extends Player {
   }
 
   void customMoveDownRight() {
-    if (animation?.runBottomRight != null &&
-        statusMoveDirectional != JoystickMoveDirectional.MOVE_DOWN_RIGHT) {
+    if (animation?.runBottomRight != null && statusMoveDirectional != JoystickMoveDirectional.MOVE_DOWN_RIGHT) {
       animation?.play(SimpleAnimationEnum.runBottomRight);
       lastDirection = Direction.bottomRight;
       statusMoveDirectional = JoystickMoveDirectional.MOVE_DOWN_RIGHT;
@@ -227,20 +218,17 @@ class SimplePlayer extends Player {
   }
 
   void customMoveDownLeft() {
-    if (animation?.runBottomLeft != null &&
-        statusMoveDirectional != JoystickMoveDirectional.MOVE_DOWN_LEFT) {
+    if (animation?.runBottomLeft != null && statusMoveDirectional != JoystickMoveDirectional.MOVE_DOWN_LEFT) {
       animation?.play(SimpleAnimationEnum.runBottomLeft);
       lastDirection = Direction.bottomLeft;
       statusMoveDirectional = JoystickMoveDirectional.MOVE_DOWN_LEFT;
     }
-    customMoveLeft(
-        addAnimation: animation?.runBottomLeft == null, isDiagonal: true);
+    customMoveLeft(addAnimation: animation?.runBottomLeft == null, isDiagonal: true);
     customMoveBottom(addAnimation: false, isDiagonal: true);
   }
 
   void idle({bool forceAddAnimation = false}) {
-    if (statusMoveDirectional != JoystickMoveDirectional.IDLE ||
-        forceAddAnimation) {
+    if (statusMoveDirectional != JoystickMoveDirectional.IDLE || forceAddAnimation) {
       switch (lastDirection) {
         case Direction.left:
           animation?.play(SimpleAnimationEnum.idleLeft);

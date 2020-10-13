@@ -1,15 +1,17 @@
 import 'dart:ui';
 
 import 'package:bonfire/bonfire.dart';
+import 'package:bonfire/joystick/joystick_controller.dart';
 import 'package:example/map/dungeon_map.dart';
 import 'package:example/util/common_sprite_sheet.dart';
 import 'package:example/util/player_sprite_sheet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:little_engine/little_engine.dart' hide JoystickDirectionalEvent, JoystickActionEvent, ActionEvent;
 
 class Knight extends SimplePlayer with Lighting {
-  final Position initPosition;
+  final LEPosition initPosition;
   double attack = 20;
   double stamina = 100;
   double initSpeed = DungeonMap.tileSize * 3;
@@ -84,10 +86,7 @@ class Knight extends SimplePlayer with Lighting {
     remove();
     gameRef.addGameComponent(
       GameDecoration(
-        initPosition: Position(
-          position.left,
-          position.top,
-        ),
+        initPosition: LEPosition(position.left, position.top),
         height: DungeonMap.tileSize,
         width: DungeonMap.tileSize,
         sprite: Sprite('player/crypt.png'),
@@ -160,9 +159,9 @@ class Knight extends SimplePlayer with Lighting {
   }
 
   @override
-  void render(Canvas c) {
+  void render(Canvas c, Offset offset) {
     _drawDirectionAttack(c);
-    super.render(c);
+    super.render(c, offset);
   }
 
   void _verifyStamina(double dt) {
@@ -192,7 +191,7 @@ class Knight extends SimplePlayer with Lighting {
   }
 
   void showEmote() {
-    gameRef.add(
+    gameRef.addComponentLater(
       AnimatedFollowerObject(
         animation: CommonSpriteSheet.emote,
         target: this,
@@ -209,10 +208,7 @@ class Knight extends SimplePlayer with Lighting {
           Container(
             width: 50,
             height: 50,
-            child: AnimationWidget(
-              animation: animation.current,
-              playing: true,
-            ),
+            child: FrameAnimWidget(frameAnimation: animation.current, playing: true),
           ),
         ),
       ], finish: () {
@@ -224,8 +220,8 @@ class Knight extends SimplePlayer with Lighting {
   void _drawDirectionAttack(Canvas c) {
     if (showDirection) {
       double radius = position.height;
-      rectDirectionAttack = Rect.fromLTWH(position.center.dx - radius,
-          position.center.dy - radius, radius * 2, radius * 2);
+      rectDirectionAttack =
+          Rect.fromLTWH(position.center.dx - radius, position.center.dy - radius, radius * 2, radius * 2);
       renderSpriteByRadAngle(
         c,
         angleRadAttack,

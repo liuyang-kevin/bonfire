@@ -1,36 +1,36 @@
 import 'package:bonfire/bonfire.dart';
+import 'package:little_engine/little_engine.dart';
 
 class EnemySpriteSheet {
-  static Animation get idleLeft => Animation.sequenced(
+  static LEFrameAnimation get idleLeft => LEFrameAnimation.sequenced(
         "enemy/goblin_idle_left.png",
         6,
         textureWidth: 16,
         textureHeight: 16,
       );
 
-  static Animation get idleRight => Animation.sequenced(
+  static LEFrameAnimation get idleRight => LEFrameAnimation.sequenced(
         "enemy/goblin_idle.png",
         6,
         textureWidth: 16,
         textureHeight: 16,
       );
 
-  static Animation get runRight => Animation.sequenced(
+  static LEFrameAnimation get runRight => LEFrameAnimation.sequenced(
         "enemy/goblin_run_right.png",
         6,
         textureWidth: 16,
         textureHeight: 16,
       );
 
-  static Animation get runLeft => Animation.sequenced(
+  static LEFrameAnimation get runLeft => LEFrameAnimation.sequenced(
         "enemy/goblin_run_left.png",
         6,
         textureWidth: 16,
         textureHeight: 16,
       );
 
-  static SimpleDirectionAnimation get simpleDirectionAnimation =>
-      SimpleDirectionAnimation(
+  static SimpleDirectionAnimation get simpleDirectionAnimation => SimpleDirectionAnimation(
         idleLeft: idleLeft,
         idleRight: idleRight,
         runLeft: runLeft,

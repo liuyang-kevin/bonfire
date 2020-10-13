@@ -4,10 +4,9 @@ import 'package:bonfire/enemy/enemy.dart';
 import 'package:bonfire/player/player.dart';
 import 'package:bonfire/util/direction.dart';
 import 'package:bonfire/util/text_damage_component.dart';
-import 'package:flame/position.dart';
-import 'package:flame/text_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:little_engine/little_engine.dart';
 
 extension EnemyExtensions on Enemy {
   void seePlayer({
@@ -73,18 +72,11 @@ extension EnemyExtensions on Enemy {
     DirectionTextDamage direction = DirectionTextDamage.RANDOM,
     bool onlyUp = false,
   }) {
-    gameRef.addLater(
+    gameRef.addComponentLater(
       TextDamageComponent(
         damage.toInt().toString(),
-        Position(
-          position.center.dx,
-          position.top,
-        ),
-        config: config ??
-            TextConfig(
-              fontSize: 14,
-              color: Colors.white,
-            ),
+        LEPosition(position.center.dx, position.top),
+        config: config ?? TextConfig(fontSize: 14, color: Colors.white),
         initVelocityTop: initVelocityTop,
         gravity: gravity,
         direction: direction,

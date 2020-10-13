@@ -1,10 +1,9 @@
 import 'dart:math';
 
 import 'package:bonfire/joystick/joystick_controller.dart';
-import 'package:flame/position.dart';
-import 'package:flame/sprite.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:little_engine/little_engine.dart' hide JoystickController, JoystickActionEvent, ActionEvent;
 
 enum JoystickActionAlign { TOP_LEFT, BOTTOM_LEFT, TOP_RIGHT, BOTTOM_RIGHT }
 
@@ -147,8 +146,8 @@ class JoystickAction {
       );
 
       // Distance between the center of joystick background & drag position
-      Position centerPosition = Position.fromOffset(_rectBackgroundDirection.center);
-      Position dragPosition = Position.fromOffset(_dragPosition);
+      LEPosition centerPosition = LEPosition.fromOffset(_rectBackgroundDirection.center);
+      LEPosition dragPosition = LEPosition.fromOffset(_dragPosition);
       double dist = centerPosition.distance(dragPosition);
 
       // The maximum distance for the knob position the edge of

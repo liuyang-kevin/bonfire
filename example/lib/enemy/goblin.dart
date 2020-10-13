@@ -2,15 +2,15 @@ import 'package:bonfire/bonfire.dart';
 import 'package:example/map/dungeon_map.dart';
 import 'package:example/util/common_sprite_sheet.dart';
 import 'package:example/util/enemy_sprite_sheet.dart';
-import 'package:flame/position.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:little_engine/little_engine.dart';
 
 class Goblin extends SimpleEnemy {
   double attack = 25;
   bool _seePlayerClose = false;
 
-  Goblin(Position initPosition)
+  Goblin(LEPosition initPosition)
       : super(
             animation: EnemySpriteSheet.simpleDirectionAnimation,
             initPosition: initPosition,
@@ -57,14 +57,14 @@ class Goblin extends SimpleEnemy {
   }
 
   @override
-  void render(Canvas canvas) {
-    super.render(canvas);
+  void render(Canvas canvas, Offset offset) {
+    super.render(canvas, offset);
     this.drawDefaultLifeBar(canvas);
   }
 
   @override
   void die() {
-    gameRef.add(
+    gameRef.addComponentLater(
       AnimatedObjectOnce(
         animation: CommonSpriteSheet.smokeExplosion,
         position: position,

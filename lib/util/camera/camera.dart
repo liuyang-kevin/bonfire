@@ -1,11 +1,12 @@
-import 'package:bonfire/base/game_component.dart';
 import 'package:bonfire/base/rpg_game.dart';
-import 'package:bonfire/bonfire.dart';
-import 'package:flame/components/mixins/has_game_ref.dart';
+import 'package:bonfire/joystick/joystick_controller.dart';
 import 'package:flutter/widgets.dart';
+import 'package:little_engine/little_engine.dart' hide JoystickMoveDirectional;
 
-class Camera with HasGameRef<RPGGame> {
-  Position position = Position.empty();
+import '../../base/game_component.dart';
+
+class Camera with StitchUpEngineRef<RPGGameEngine> {
+  LEPosition position = LEPosition.empty();
   double zoom;
   Offset _lastTargetOffset = Offset.zero;
   GameComponent target;
@@ -69,7 +70,7 @@ class Camera with HasGameRef<RPGGame> {
   }
 
   void moveToPositionAnimated(
-    Position position, {
+    LEPosition position, {
     double zoom = 1,
     VoidCallback finish,
     Duration duration,
@@ -135,7 +136,7 @@ class Camera with HasGameRef<RPGGame> {
     ).start();
   }
 
-  void moveToPosition(Position position) {
+  void moveToPosition(LEPosition position) {
     if (gameRef?.size == null) return;
     target = null;
     this.position = position;
@@ -169,14 +170,10 @@ class Camera with HasGameRef<RPGGame> {
     final verticalDistance = screenCenter.dy - positionTarget.dy;
 
     if (horizontalDistance.abs() > horizontal) {
-      this.position.x += horizontalDistance > 0
-          ? horizontal - horizontalDistance
-          : -horizontalDistance - horizontal;
+      this.position.x += horizontalDistance > 0 ? horizontal - horizontalDistance : -horizontalDistance - horizontal;
     }
     if (verticalDistance.abs() > vertical) {
-      this.position.y += verticalDistance > 0
-          ? vertical - verticalDistance
-          : -verticalDistance - vertical;
+      this.position.y += verticalDistance > 0 ? vertical - verticalDistance : -verticalDistance - vertical;
     }
 
     if (moveOnlyMapArea) {

@@ -5,9 +5,9 @@ import 'package:bonfire/util/game_controller.dart';
 import 'package:example/enemy/goblin.dart';
 import 'package:example/map/dungeon_map.dart';
 import 'package:example/player/knight.dart';
-import 'package:flame/animation.dart' as FlameAnimation;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:little_engine/little_engine.dart' hide JoystickDirectional, JoystickActionAlign, JoystickAction;
 
 import 'interface/knight_interface.dart';
 
@@ -17,8 +17,7 @@ class GameManualMap extends StatelessWidget implements GameListener {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      DungeonMap.tileSize =
-          max(constraints.maxHeight, constraints.maxWidth) / (kIsWeb ? 25 : 22);
+      DungeonMap.tileSize = max(constraints.maxHeight, constraints.maxWidth) / (kIsWeb ? 25 : 22);
       return BonfireWidget(
         joystick: Joystick(
           keyboardEnable: true,
@@ -47,7 +46,7 @@ class GameManualMap extends StatelessWidget implements GameListener {
           ],
         ),
         player: Knight(
-          Position((4 * DungeonMap.tileSize), (6 * DungeonMap.tileSize)),
+          LEPosition((4 * DungeonMap.tileSize), (6 * DungeonMap.tileSize)),
         ),
         interface: KnightInterface(),
         map: DungeonMap.map(),
@@ -56,8 +55,7 @@ class GameManualMap extends StatelessWidget implements GameListener {
         background: BackgroundColorGame(Colors.blueGrey[900]),
         gameController: _controller..setListener(this),
         lightingColorGame: Colors.black.withOpacity(0.75),
-        cameraZoom:
-            1.0, // you can change the game zoom here or directly on camera
+        cameraZoom: 1.0, // you can change the game zoom here or directly on camera
       );
     });
   }
@@ -76,13 +74,10 @@ class GameManualMap extends StatelessWidget implements GameListener {
     double x = DungeonMap.tileSize * (4 + Random().nextInt(25));
     double y = DungeonMap.tileSize * (5 + Random().nextInt(3));
 
-    Position position = Position(
-      x,
-      y,
-    );
+    LEPosition position = LEPosition(x, y);
     _controller.addGameComponent(
       AnimatedObjectOnce(
-        animation: FlameAnimation.Animation.sequenced(
+        animation: LEFrameAnimation.sequenced(
           "smoke_explosin.png",
           6,
           textureWidth: 16,

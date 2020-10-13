@@ -4,18 +4,21 @@ import 'package:bonfire/bonfire.dart';
 import 'package:bonfire/objects/animated_object.dart';
 import 'package:bonfire/util/collision/object_collision.dart';
 import 'package:bonfire/util/priority_layer.dart';
-import 'package:flame/animation.dart' as FlameAnimation;
-import 'package:flame/position.dart';
-import 'package:flame/sprite.dart';
 import 'package:flutter/widgets.dart';
+import 'package:little_engine/little_engine.dart';
 
 export 'package:bonfire/decoration/extensions.dart';
 
+/// 游戏装饰物, 可以是血条等UI, 也可是操作对象
+///
+/// [additionalPriority] 为 0 ,为装饰器[PriorityLayer.DECORATION]优先级别
+/// [additionalPriority] !0 ,为对象优先级[PriorityLayer.OBJECTS]+[additionalPriority]
+/// 该组件表示您想要添加到场景中的任何内容，可以是NPC中间的一个简单“桶”，可以用来与播放器进行交互。
 /// This component represents anything you want to add to the scene, it can be
 /// a simple "barrel" halfway to an NPC that you can use to interact with your
 /// player.
 ///
-/// You can use ImageSprite or Animation[FlameAnimation.Animation]
+/// You can use ImageSprite or Animation[LEFrameAnimation]
 class GameDecoration extends AnimatedObject with ObjectCollision {
   /// Height of the Decoration.
   final double height;
@@ -27,7 +30,7 @@ class GameDecoration extends AnimatedObject with ObjectCollision {
   final bool frontFromPlayer;
 
   /// World position that this decoration must position yourself.
-  final Position initPosition;
+  final LEPosition initPosition;
 
   Sprite sprite;
 
@@ -39,7 +42,7 @@ class GameDecoration extends AnimatedObject with ObjectCollision {
     @required this.height,
     @required this.width,
     this.frontFromPlayer = false,
-    FlameAnimation.Animation animation,
+    LEFrameAnimation animation,
     Collision collision,
   }) {
     if (frontFromPlayer) additionalPriority = 1;
@@ -70,7 +73,7 @@ class GameDecoration extends AnimatedObject with ObjectCollision {
   }
 
   GameDecoration.animation(
-    FlameAnimation.Animation animation, {
+    LEFrameAnimation animation, {
     @required this.initPosition,
     @required this.height,
     @required this.width,
@@ -105,7 +108,7 @@ class GameDecoration extends AnimatedObject with ObjectCollision {
   }
 
   GameDecoration.animationMultiCollision(
-    FlameAnimation.Animation animation, {
+    LEFrameAnimation animation, {
     @required this.initPosition,
     @required this.height,
     @required this.width,
@@ -128,21 +131,17 @@ class GameDecoration extends AnimatedObject with ObjectCollision {
   }
 
   @override
-  void render(Canvas canvas) {
-    if (sprite != null && sprite.loaded()) sprite.renderRect(canvas, position);
+  void render(Canvas canvas, Offset offset) {
+    if (sprite != null && sprite.loaded) sprite.renderRect(canvas, position);
 
-    super.render(canvas);
+    super.render(canvas, offset);
 
     if (gameRef != null && gameRef.showCollisionArea) {
       drawCollision(canvas, position, gameRef.collisionAreaColor);
     }
   }
 
-  Rect generateRectWithBleedingPixel(
-    Position position,
-    double width,
-    double height,
-  ) {
+  Rect generateRectWithBleedingPixel(LEPosition position, double width, double height) {
     double bleendingPixel = (width > height ? width : height) * 0.03;
     if (bleendingPixel > 2) {
       bleendingPixel = 2;
@@ -156,7 +155,7 @@ class GameDecoration extends AnimatedObject with ObjectCollision {
   }
 
   @override
-  int priority() {
+  int get priority {
     if (additionalPriority == 0) {
       return PriorityLayer.DECORATION;
     } else {

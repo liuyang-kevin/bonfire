@@ -2,15 +2,16 @@ import 'package:bonfire/lighting/lighting_config.dart';
 import 'package:bonfire/player/extensions.dart';
 import 'package:bonfire/player/rotation/rotation_player.dart';
 import 'package:bonfire/util/collision/collision.dart';
-import 'package:flame/animation.dart' as FlameAnimation;
 import 'package:flutter/widgets.dart';
+import 'package:little_engine/little_engine.dart';
 
+/// 扩展可旋转玩家对象, 近战,远程攻击动画
 extension RotationPlayerExtensions on RotationPlayer {
   void simpleAttackRange({
-    @required FlameAnimation.Animation animationTop,
+    @required LEFrameAnimation animationTop,
     @required double width,
     @required double height,
-    FlameAnimation.Animation animationDestroy,
+    LEFrameAnimation animationDestroy,
     int id,
     double speed = 150,
     double damage = 1,
@@ -41,7 +42,7 @@ extension RotationPlayerExtensions on RotationPlayer {
   }
 
   void simpleAttackMelee({
-    @required FlameAnimation.Animation animationTop,
+    @required LEFrameAnimation animationTop,
     @required double damage,
     int id,
     double radAngleDirection,

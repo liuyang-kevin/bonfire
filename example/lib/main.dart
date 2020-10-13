@@ -1,13 +1,13 @@
-import 'package:bonfire/bonfire.dart';
 import 'package:example/game_manual_map.dart';
 import 'package:example/game_tiled_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:little_engine/little_engine.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Flame.util.setLandscape(); //TODO Comment when running for web
-  await Flame.util.fullScreen(); //TODO Comment when running for web
+  await LESourceManager.screenUtils.setLandscape(); //TODO Comment when running for web
+  await LESourceManager.screenUtils.fullScreen(); //TODO Comment when running for web
   runApp(
     MaterialApp(
       home: Menu(),
@@ -34,8 +34,7 @@ class Menu extends StatelessWidget {
             SizedBox(
               width: 200,
               child: RaisedButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 child: Text('Manual Map'),
                 onPressed: () {
                   Navigator.push(
@@ -51,8 +50,7 @@ class Menu extends StatelessWidget {
             SizedBox(
               width: 200,
               child: RaisedButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 child: Text('Tiled Map'),
                 onPressed: () {
                   Navigator.push(

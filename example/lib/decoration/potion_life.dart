@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:bonfire/bonfire.dart';
 import 'package:bonfire/util/collision/object_collision.dart';
 import 'package:example/map/dungeon_map.dart';
-import 'package:flame/position.dart';
+import 'package:little_engine/little_engine.dart';
 
 class PotionLife extends GameDecoration with Sensor {
-  final Position initPosition;
+  final LEPosition initPosition;
   final double life;
   double _lifeDistributed = 0;
 

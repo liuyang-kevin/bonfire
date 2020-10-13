@@ -5,10 +5,8 @@ import 'package:bonfire/base/game_component.dart';
 import 'package:bonfire/util/collision/collision.dart';
 import 'package:bonfire/util/collision/object_collision.dart';
 import 'package:bonfire/util/controlled_update_animation.dart';
-import 'package:flame/position.dart';
-import 'package:flame/sprite.dart';
-import 'package:flame/text_config.dart';
 import 'package:flutter/material.dart';
+import 'package:little_engine/little_engine.dart';
 
 class Tile extends GameComponent with ObjectCollision {
   Sprite sprite;
@@ -16,12 +14,12 @@ class Tile extends GameComponent with ObjectCollision {
   final double width;
   final double height;
   final String type;
-  Position _positionText;
+  LEPosition _positionText;
   Paint _paintText;
 
   Tile(
     String spritePath,
-    Position position, {
+    LEPosition position, {
     Collision collision,
     this.width = 32,
     this.height = 32,
@@ -31,12 +29,12 @@ class Tile extends GameComponent with ObjectCollision {
     this.position = generateRectWithBleedingPixel(position, width, height);
     if (spritePath.isNotEmpty) sprite = Sprite(spritePath);
 
-    _positionText = Position(position.x, position.y);
+    _positionText = LEPosition(position.x, position.y);
   }
 
   Tile.fromSprite(
     Sprite sprite,
-    Position position, {
+    LEPosition position, {
     Collision collision,
     this.width = 32,
     this.height = 32,
@@ -46,12 +44,12 @@ class Tile extends GameComponent with ObjectCollision {
     this.sprite = sprite;
     this.position = generateRectWithBleedingPixel(position, width, height);
 
-    _positionText = Position(position.x, position.y);
+    _positionText = LEPosition(position.x, position.y);
   }
 
   Tile.fromSpriteMultiCollision(
     Sprite sprite,
-    Position position, {
+    LEPosition position, {
     List<Collision> collisions,
     this.width = 32,
     this.height = 32,
@@ -69,12 +67,12 @@ class Tile extends GameComponent with ObjectCollision {
       offsetY: offsetY,
     );
 
-    _positionText = Position(position.x, position.y);
+    _positionText = LEPosition(position.x, position.y);
   }
 
   Tile.fromAnimation(
     ControlledUpdateAnimation animation,
-    Position position, {
+    LEPosition position, {
     Collision collision,
     this.width = 32,
     this.height = 32,
@@ -84,12 +82,12 @@ class Tile extends GameComponent with ObjectCollision {
     if (collision != null) this.collisions = [collision];
     this.position = generateRectWithBleedingPixel(position, width, height);
 
-    _positionText = Position(position.x, position.y);
+    _positionText = LEPosition(position.x, position.y);
   }
 
   Tile.fromAnimationMultiCollision(
     ControlledUpdateAnimation animation,
-    Position position, {
+    LEPosition position, {
     List<Collision> collisions,
     this.width = 32,
     this.height = 32,
@@ -107,14 +105,14 @@ class Tile extends GameComponent with ObjectCollision {
       offsetY: offsetY,
     );
 
-    _positionText = Position(position.x, position.y);
+    _positionText = LEPosition(position.x, position.y);
   }
 
   @override
-  void render(Canvas canvas) {
+  void render(Canvas canvas, Offset offset) {
     if (position == null) return;
     animation?.render(canvas, position);
-    if (sprite?.loaded() ?? false) {
+    if (sprite?.loaded ?? false) {
       sprite.renderRect(canvas, position);
     }
 
@@ -125,7 +123,7 @@ class Tile extends GameComponent with ObjectCollision {
     if ((gameRef?.constructionMode ?? false) && isVisibleInCamera()) {
       _drawGrid(canvas);
     }
-    super.render(canvas);
+    super.render(canvas, offset);
   }
 
   void _drawGrid(Canvas canvas) {
@@ -136,8 +134,7 @@ class Tile extends GameComponent with ObjectCollision {
     }
     canvas.drawRect(
       position,
-      _paintText
-        ..color = gameRef.constructionModeColor ?? Colors.cyan.withOpacity(0.5),
+      _paintText..color = gameRef.constructionModeColor ?? Colors.cyan.withOpacity(0.5),
     );
     if (_positionText.x % 2 == 0) {
       TextConfig(
@@ -149,13 +146,12 @@ class Tile extends GameComponent with ObjectCollision {
           .render(
             canvas,
             '${_positionText.x.toInt()}:${_positionText.y.toInt()}',
-            Position(position.left + 2, position.top + 2),
+            LEPosition(position.left + 2, position.top + 2),
           );
     }
   }
 
-  Rect generateRectWithBleedingPixel(
-      Position position, double width, double height,
+  Rect generateRectWithBleedingPixel(LEPosition position, double width, double height,
       {double offsetX = 0, double offsetY = 0}) {
     double sizeMax = max(width, height);
     double bleendingPixel = sizeMax * 0.04;
@@ -163,12 +159,8 @@ class Tile extends GameComponent with ObjectCollision {
       bleendingPixel = 3;
     }
     return Rect.fromLTWH(
-      (position.x * width) -
-          (position.x % 2 == 0 ? (bleendingPixel / 2) : 0) +
-          offsetX,
-      (position.y * height) -
-          (position.y % 2 == 0 ? (bleendingPixel / 2) : 0) +
-          offsetY,
+      (position.x * width) - (position.x % 2 == 0 ? (bleendingPixel / 2) : 0) + offsetX,
+      (position.y * height) - (position.y % 2 == 0 ? (bleendingPixel / 2) : 0) + offsetY,
       width + (position.x % 2 == 0 ? bleendingPixel : 0),
       height + (position.y % 2 == 0 ? bleendingPixel : 0),
     );

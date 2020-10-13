@@ -10,13 +10,13 @@ import 'package:bonfire/objects/flying_attack_object.dart';
 import 'package:bonfire/player/player.dart';
 import 'package:bonfire/util/collision/object_collision.dart';
 import 'package:bonfire/util/text_damage_component.dart';
-import 'package:flame/animation.dart' as FlameAnimation;
-import 'package:flame/position.dart';
-import 'package:flame/text_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:little_engine/little_engine.dart';
 
+/// 扩展 玩家类型
 extension PlayerExtensions on Player {
+  /// 攻击后,显示伤害数值
   void showDamage(
     double damage, {
     TextConfig config,
@@ -26,18 +26,12 @@ extension PlayerExtensions on Player {
     bool onlyUp = false,
     DirectionTextDamage direction = DirectionTextDamage.RANDOM,
   }) {
-    gameRef.addLater(
+    // 对引擎添加一个伤害文本comp,
+    gameRef.addComponentLater(
       TextDamageComponent(
         damage.toInt().toString(),
-        Position(
-          position.center.dx,
-          position.top,
-        ),
-        config: config ??
-            TextConfig(
-              fontSize: 14,
-              color: Colors.red,
-            ),
+        LEPosition(position.center.dx, position.top),
+        config: config ?? TextConfig(fontSize: 14, color: Colors.red),
         initVelocityTop: initVelocityTop,
         gravity: gravity,
         direction: direction,
@@ -47,6 +41,11 @@ extension PlayerExtensions on Player {
     );
   }
 
+  /// 观测敌人
+  ///
+  /// * observed 回调:观测到的敌人
+  /// * notObserved 回调:没有敌人被观测到
+  /// * [radiusVision] 视野半径
   void seeEnemy({
     Function(List<Enemy>) observed,
     Function() notObserved,
@@ -60,20 +59,17 @@ extension PlayerExtensions on Player {
       return;
     }
 
+    //region 视野区域,半径翻倍
     double visionWidth = radiusVision * 2;
     double visionHeight = radiusVision * 2;
 
     Rect fieldOfVision = Rect.fromLTWH(
-      this.position.center.dx - radiusVision,
-      this.position.center.dy - radiusVision,
-      visionWidth,
-      visionHeight,
-    );
+        this.position.center.dx - radiusVision, this.position.center.dy - radiusVision, visionWidth, visionHeight);
+    //endregion
 
-    List<Enemy> enemiesObserved = enemiesInLife
-        .where((enemy) =>
-            enemy.position != null && fieldOfVision.overlaps(enemy.position))
-        .toList();
+    // 筛选敌人
+    List<Enemy> enemiesObserved =
+        enemiesInLife.where((enemy) => enemy.position != null && fieldOfVision.overlaps(enemy.position)).toList();
 
     if (enemiesObserved.isNotEmpty) {
       if (observed != null) observed(enemiesObserved);
@@ -82,12 +78,13 @@ extension PlayerExtensions on Player {
     }
   }
 
+  ///
   void simpleAttackRangeByAngle({
-    @required FlameAnimation.Animation animationTop,
+    @required LEFrameAnimation animationTop,
     @required double width,
     @required double height,
     @required double radAngleDirection,
-    FlameAnimation.Animation animationDestroy,
+    LEFrameAnimation animationDestroy,
     dynamic id,
     double speed = 150,
     double damage = 1,
@@ -104,14 +101,13 @@ extension PlayerExtensions on Player {
     double nextY = this.height * sin(angle);
     Offset nextPoint = Offset(nextX, nextY);
 
-    Offset diffBase = Offset(this.position.center.dx + nextPoint.dx,
-            this.position.center.dy + nextPoint.dy) -
-        this.position.center;
+    Offset diffBase =
+        Offset(this.position.center.dx + nextPoint.dx, this.position.center.dy + nextPoint.dy) - this.position.center;
 
     Rect position = this.position.shift(diffBase);
-    gameRef.addLater(FlyingAttackAngleObject(
+    gameRef.addComponentLater(FlyingAttackAngleObject(
       id: id,
-      initPosition: Position(position.left, position.top),
+      initPosition: LEPosition(position.left, position.top),
       radAngle: angle,
       width: width,
       height: height,
@@ -128,12 +124,13 @@ extension PlayerExtensions on Player {
     ));
   }
 
+  ///
   void simpleAttackRangeByDirection({
-    @required FlameAnimation.Animation animationRight,
-    @required FlameAnimation.Animation animationLeft,
-    @required FlameAnimation.Animation animationTop,
-    @required FlameAnimation.Animation animationBottom,
-    FlameAnimation.Animation animationDestroy,
+    @required LEFrameAnimation animationRight,
+    @required LEFrameAnimation animationLeft,
+    @required LEFrameAnimation animationTop,
+    @required LEFrameAnimation animationBottom,
+    LEFrameAnimation animationDestroy,
     @required double width,
     @required double height,
     @required Direction direction,
@@ -148,71 +145,71 @@ extension PlayerExtensions on Player {
   }) {
     if (isDead) return;
 
-    Position startPosition;
-    FlameAnimation.Animation attackRangeAnimation;
+    LEPosition startPosition;
+    LEFrameAnimation attackRangeAnimation;
 
     Direction attackDirection = direction;
 
     switch (attackDirection) {
       case Direction.left:
         if (animationLeft != null) attackRangeAnimation = animationLeft;
-        startPosition = Position(
+        startPosition = LEPosition(
           this.rectCollision.left - width,
           (this.rectCollision.top + (this.rectCollision.height - height) / 2),
         );
         break;
       case Direction.right:
         if (animationRight != null) attackRangeAnimation = animationRight;
-        startPosition = Position(
+        startPosition = LEPosition(
           this.rectCollision.right,
           (this.rectCollision.top + (this.rectCollision.height - height) / 2),
         );
         break;
       case Direction.top:
         if (animationTop != null) attackRangeAnimation = animationTop;
-        startPosition = Position(
+        startPosition = LEPosition(
           (this.rectCollision.left + (this.rectCollision.width - width) / 2),
           this.rectCollision.top - height,
         );
         break;
       case Direction.bottom:
         if (animationBottom != null) attackRangeAnimation = animationBottom;
-        startPosition = Position(
+        startPosition = LEPosition(
           (this.rectCollision.left + (this.rectCollision.width - width) / 2),
           this.rectCollision.bottom,
         );
         break;
       case Direction.topLeft:
         if (animationLeft != null) attackRangeAnimation = animationLeft;
-        startPosition = Position(
+        startPosition = LEPosition(
           this.rectCollision.left - width,
           (this.rectCollision.top + (this.rectCollision.height - height) / 2),
         );
         break;
       case Direction.topRight:
         if (animationRight != null) attackRangeAnimation = animationRight;
-        startPosition = Position(
+        startPosition = LEPosition(
           this.rectCollision.right,
           (this.rectCollision.top + (this.rectCollision.height - height) / 2),
         );
         break;
       case Direction.bottomLeft:
         if (animationLeft != null) attackRangeAnimation = animationLeft;
-        startPosition = Position(
+        startPosition = LEPosition(
           this.rectCollision.left - width,
           (this.rectCollision.top + (this.rectCollision.height - height) / 2),
         );
         break;
       case Direction.bottomRight:
         if (animationRight != null) attackRangeAnimation = animationRight;
-        startPosition = Position(
+        startPosition = LEPosition(
           this.rectCollision.right,
           (this.rectCollision.top + (this.rectCollision.height - height) / 2),
         );
         break;
     }
 
-    gameRef.addLater(
+    gameRef.addComponentLater(
       FlyingAttackObject(
         id: id,
         direction: attackDirection,
@@ -233,11 +230,12 @@ extension PlayerExtensions on Player {
     );
   }
 
+  /// 固定方向近战
   void simpleAttackMeleeByDirection({
-    FlameAnimation.Animation animationRight,
-    FlameAnimation.Animation animationBottom,
-    FlameAnimation.Animation animationLeft,
-    FlameAnimation.Animation animationTop,
+    LEFrameAnimation animationRight,
+    LEFrameAnimation animationBottom,
+    LEFrameAnimation animationLeft,
+    LEFrameAnimation animationTop,
     @required double damage,
     @required Direction direction,
     dynamic id,
@@ -249,7 +247,7 @@ extension PlayerExtensions on Player {
     if (isDead) return;
 
     Rect positionAttack;
-    FlameAnimation.Animation anim;
+    LEFrameAnimation anim;
     double pushLeft = 0;
     double pushTop = 0;
     Direction attackDirection = direction;
@@ -337,33 +335,29 @@ extension PlayerExtensions on Player {
     }
 
     if (anim != null) {
-      gameRef.addLater(AnimatedObjectOnce(
+      gameRef.addComponentLater(AnimatedObjectOnce(
         animation: anim,
         position: positionAttack,
       ));
     }
 
-    gameRef
-        .attackables()
-        .where((a) =>
-            !a.isAttackablePlayer &&
-            a.rectAttackable().overlaps(positionAttack))
-        .forEach(
+    gameRef.attackers().where((a) => !a.isAttackPlayer && a.attackScope.overlaps(positionAttack)).forEach(
       (enemy) {
         enemy.receiveDamage(damage, id);
         Rect rectAfterPush = enemy.position.translate(pushLeft, pushTop);
         if (withPush &&
-            (enemy is ObjectCollision &&
-                !(enemy as ObjectCollision)
-                    .isCollision(displacement: rectAfterPush))) {
+            (enemy is ObjectCollision && !(enemy as ObjectCollision).isCollision(displacement: rectAfterPush))) {
           enemy.translate(pushLeft, pushTop);
         }
       },
     );
   }
 
+  /// 带角度近战
+  ///
+  /// * [withPush] 带击退效果, 计算伤害后,计算碰撞,重设敌人位置
   void simpleAttackMeleeByAngle({
-    @required FlameAnimation.Animation animationTop,
+    @required LEFrameAnimation animationTop,
     @required double damage,
     @required double radAngleDirection,
     dynamic id,
@@ -379,30 +373,24 @@ extension PlayerExtensions on Player {
     double nextY = this.height * sin(angle);
     Offset nextPoint = Offset(nextX, nextY);
 
-    Offset diffBase = Offset(this.position.center.dx + nextPoint.dx,
-            this.position.center.dy + nextPoint.dy) -
-        this.position.center;
+    Offset diffBase =
+        Offset(this.position.center.dx + nextPoint.dx, this.position.center.dy + nextPoint.dy) - this.position.center;
 
     Rect positionAttack = this.position.shift(diffBase);
 
-    gameRef.addLater(AnimatedObjectOnce(
+    // 添加一次性攻击动画
+    gameRef.addComponentLater(AnimatedObjectOnce(
       animation: animationTop,
       position: positionAttack,
       rotateRadAngle: angle,
     ));
 
-    gameRef
-        .attackables()
-        .where((a) =>
-            !a.isAttackablePlayer &&
-            a.rectAttackable().overlaps(positionAttack))
-        .forEach((enemy) {
+    // 从存在的攻击人里筛选敌人,计算结果,  [withPush] 带击退效果, 计算伤害后,计算碰撞,重设敌人位置
+    gameRef.attackers().where((a) => !a.isAttackPlayer && a.attackScope.overlaps(positionAttack)).forEach((enemy) {
       enemy.receiveDamage(damage, id);
       Rect rectAfterPush = position.translate(diffBase.dx, diffBase.dy);
       if (withPush &&
-          (enemy is ObjectCollision &&
-              !(enemy as ObjectCollision)
-                  .isCollision(displacement: rectAfterPush))) {
+          (enemy is ObjectCollision && !(enemy as ObjectCollision).isCollision(displacement: rectAfterPush))) {
         translate(diffBase.dx, diffBase.dy);
       }
     });

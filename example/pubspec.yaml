@@ -22,6 +22,8 @@ dependencies:
 
   bonfire:
     path: ".."
+  little_engine:
+    path: "../../little_engine"
 
 dev_dependencies:
   test: any

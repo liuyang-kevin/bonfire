@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:bonfire/bonfire.dart';
 import 'package:bonfire/util/collision/object_collision.dart';
 import 'package:example/map/dungeon_map.dart';
-import 'package:flame/position.dart';
+import 'package:little_engine/little_engine.dart';
 
 class Spikes extends GameDecoration with Sensor {
-  final Position initPosition;
+  final LEPosition initPosition;
   Timer timer;
 
   bool isTick = false;
@@ -22,8 +22,8 @@ class Spikes extends GameDecoration with Sensor {
   @override
   void onContact(ObjectCollision collision) {
     if (timer == null) {
-      if (collision is Attackable) {
-        (collision as Attackable).receiveDamage(10, 1);
+      if (collision is StitchAttacker) {
+        (collision as StitchAttacker).receiveDamage(10, 1);
         timer = Timer(Duration(milliseconds: 500), () {
           timer = null;
         });

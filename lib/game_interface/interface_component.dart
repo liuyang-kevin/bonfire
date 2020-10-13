@@ -1,8 +1,7 @@
 import 'package:bonfire/base/game_component.dart';
 import 'package:bonfire/util/gestures/tap_gesture.dart';
-import 'package:flame/position.dart';
-import 'package:flame/sprite.dart';
 import 'package:flutter/widgets.dart';
+import 'package:little_engine/little_engine.dart';
 
 class InterfaceComponent extends GameComponent with TapGesture {
   final int id;
@@ -14,11 +13,11 @@ class InterfaceComponent extends GameComponent with TapGesture {
   Sprite spriteToRender;
 
   @override
-  bool isHud() => true;
+  bool get isHud => true;
 
   InterfaceComponent({
     @required this.id,
-    @required Position position,
+    @required LEPosition position,
     @required this.width,
     @required this.height,
     this.sprite,
@@ -29,10 +28,9 @@ class InterfaceComponent extends GameComponent with TapGesture {
     spriteToRender = sprite;
   }
 
-  void render(Canvas canvas) {
-    if (spriteToRender != null &&
-        this.position != null &&
-        spriteToRender.loaded())
+  @override
+  void render(Canvas canvas, Offset offset) {
+    if (spriteToRender != null && this.position != null && spriteToRender.loaded)
       spriteToRender.renderRect(canvas, this.position);
   }
 

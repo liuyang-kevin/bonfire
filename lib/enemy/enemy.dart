@@ -1,17 +1,19 @@
 import 'dart:math';
 
 import 'package:bonfire/base/game_component.dart';
+import 'package:bonfire/bonfire.dart';
 import 'package:bonfire/util/collision/collision.dart';
 import 'package:bonfire/util/collision/object_collision.dart';
 import 'package:bonfire/util/interval_tick.dart';
-import 'package:bonfire/util/mixins/attackable.dart';
 import 'package:bonfire/util/priority_layer.dart';
-import 'package:flame/position.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:little_engine/little_engine.dart';
 
+/// 敌人组件,基本跟玩家对象一致.
+///
 /// It is used to represent your enemies.
-class Enemy extends GameComponent with ObjectCollision, Attackable {
+class Enemy extends GameComponent with ObjectCollision, StitchAttacker {
   /// Height of the Enemy.
   final double height;
 
@@ -34,10 +36,10 @@ class Enemy extends GameComponent with ObjectCollision, Attackable {
   bool collisionOnlyVisibleScreen = true;
 
   @override
-  get isAttackableEnemy => true;
+  get isAttackEnemy => true;
 
   Enemy(
-      {@required Position initPosition,
+      {@required LEPosition initPosition,
       @required this.height,
       @required this.width,
       this.life = 10,
@@ -49,16 +51,14 @@ class Enemy extends GameComponent with ObjectCollision, Attackable {
       width,
       height,
     );
-    this.collisions = [
-      collision ?? Collision(width: width, height: height / 2)
-    ];
+    this.collisions = [collision ?? Collision(width: width, height: height / 2)];
   }
 
   bool get isDead => _isDead;
 
   @override
-  void render(Canvas canvas) {
-    super.render(canvas);
+  void render(Canvas canvas, Offset offset) {
+    super.render(canvas, offset);
     if (gameRef != null && gameRef.showCollisionArea) {
       drawCollision(canvas, position, gameRef.collisionAreaColor);
     }
@@ -124,16 +124,13 @@ class Enemy extends GameComponent with ObjectCollision, Attackable {
     position = position.translate(speed, 0);
   }
 
-  void moveFromAngleDodgeObstacles(double speed, double angle,
-      {Function notMove}) {
+  void moveFromAngleDodgeObstacles(double speed, double angle, {Function notMove}) {
     double innerSpeed = (speed * dtUpdate);
     double nextX = innerSpeed * cos(angle);
     double nextY = innerSpeed * sin(angle);
     Offset nextPoint = Offset(nextX, nextY);
 
-    Offset diffBase = Offset(position.center.dx + nextPoint.dx,
-            position.center.dy + nextPoint.dy) -
-        position.center;
+    Offset diffBase = Offset(position.center.dx + nextPoint.dx, position.center.dy + nextPoint.dy) - position.center;
 
     var collisionX = isCollisionTranslate(
       position,
@@ -188,9 +185,7 @@ class Enemy extends GameComponent with ObjectCollision, Attackable {
     double nextY = innerSpeed * sin(angle);
     Offset nextPoint = Offset(nextX, nextY);
 
-    Offset diffBase = Offset(position.center.dx + nextPoint.dx,
-            position.center.dy + nextPoint.dy) -
-        position.center;
+    Offset diffBase = Offset(position.center.dx + nextPoint.dx, position.center.dy + nextPoint.dy) - position.center;
     this.position = position.shift(diffBase);
   }
 
@@ -216,9 +211,7 @@ class Enemy extends GameComponent with ObjectCollision, Attackable {
   }
 
   bool checkPassedInterval(String name, int intervalInMilli, double dt) {
-    if (this.timers[name] == null ||
-        (this.timers[name] != null &&
-            this.timers[name].interval != intervalInMilli)) {
+    if (this.timers[name] == null || (this.timers[name] != null && this.timers[name].interval != intervalInMilli)) {
       this.timers[name] = IntervalTick(intervalInMilli);
       return true;
     } else {
@@ -229,8 +222,8 @@ class Enemy extends GameComponent with ObjectCollision, Attackable {
   Rect get rectCollision => getRectCollision(position);
 
   @override
-  int priority() => PriorityLayer.ENEMY;
+  int get priority => PriorityLayer.ENEMY;
 
   @override
-  Rect rectAttackable() => rectCollision;
+  Rect get attackScope => rectCollision;
 }

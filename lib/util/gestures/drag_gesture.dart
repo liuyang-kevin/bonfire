@@ -10,15 +10,14 @@ mixin DragGesture on GameComponent {
 
   void startDrag(int pointer, Offset position) {
     if (!(this is GameComponent) || !enableDrag) return;
-    if (this.isHud()) {
+    if (this.isHud) {
       if (this.position.contains(position)) {
         _pointer = pointer;
         _startDragOffset = position;
         _startDragPosition = this.position;
       }
     } else {
-      final absolutePosition =
-          this.gameRef.gameCamera.cameraPositionToWorld(position);
+      final absolutePosition = this.gameRef.gameCamera.cameraPositionToWorld(position);
       if (this.position.contains(absolutePosition)) {
         _pointer = pointer;
         _startDragOffset = absolutePosition;
@@ -30,7 +29,7 @@ mixin DragGesture on GameComponent {
   void moveDrag(int pointer, Offset position) {
     if (!enableDrag || pointer != _pointer) return;
     if (_startDragOffset != null && this is GameComponent) {
-      if (this.isHud()) {
+      if (this.isHud) {
         this.position = Rect.fromLTWH(
           _startDragPosition.left + (position.dx - _startDragOffset.dx),
           _startDragPosition.top + (position.dy - _startDragOffset.dy),
@@ -38,8 +37,7 @@ mixin DragGesture on GameComponent {
           _startDragPosition.height,
         );
       } else {
-        final absolutePosition =
-            this.gameRef.gameCamera.cameraPositionToWorld(position);
+        final absolutePosition = this.gameRef.gameCamera.cameraPositionToWorld(position);
         this.position = Rect.fromLTWH(
           _startDragPosition.left + (absolutePosition.dx - _startDragOffset.dx),
           _startDragPosition.top + (absolutePosition.dy - _startDragOffset.dy),

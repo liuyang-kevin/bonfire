@@ -4,6 +4,7 @@ import 'package:bonfire/bonfire.dart';
 import 'package:example/interface/bar_life_component.dart';
 import 'package:example/player/knight.dart';
 import 'package:flutter/material.dart';
+import 'package:little_engine/little_engine.dart';
 
 class KnightInterface extends GameInterface {
   @override
@@ -15,7 +16,7 @@ class KnightInterface extends GameInterface {
       height: 40,
       width: 40,
       id: 5,
-      position: Position(150, 20),
+      position: LEPosition(150, 20),
       onTapComponent: () {
         if (gameRef.player != null) {
           (gameRef.player as Knight).showEmote();

@@ -11,14 +11,14 @@ import 'package:example/map/dungeon_map.dart';
 import 'package:example/player/knight.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:little_engine/little_engine.dart' hide JoystickDirectional, JoystickAction, JoystickActionAlign;
 
 class GameTiledMap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        DungeonMap.tileSize = max(constraints.maxHeight, constraints.maxWidth) /
-            (kIsWeb ? 25 : 22);
+        DungeonMap.tileSize = max(constraints.maxHeight, constraints.maxWidth) / (kIsWeb ? 25 : 22);
         return BonfireTiledWidget(
           joystick: Joystick(
             keyboardEnable: true,
@@ -46,28 +46,20 @@ class GameTiledMap extends StatelessWidget {
               )
             ],
           ),
-          player: Knight(
-            Position((8 * DungeonMap.tileSize), (5 * DungeonMap.tileSize)),
-          ),
+          player: Knight(LEPosition((8 * DungeonMap.tileSize), (5 * DungeonMap.tileSize))),
           interface: KnightInterface(),
           map: TiledWorldMap(
             'tiled/mapa1.json',
             forceTileSize: Size(DungeonMap.tileSize, DungeonMap.tileSize),
           )
-            ..registerObject(
-                'goblin', (x, y, width, height) => Goblin(Position(x, y)))
-            ..registerObject(
-                'torch', (x, y, width, height) => Torch(Position(x, y)))
-            ..registerObject('barrel',
-                (x, y, width, height) => BarrelDraggable(Position(x, y)))
-            ..registerObject(
-                'spike', (x, y, width, height) => Spikes(Position(x, y)))
-            ..registerObject(
-                'chest', (x, y, width, height) => Chest(Position(x, y))),
+            ..registerObject('goblin', (x, y, width, height) => Goblin(LEPosition(x, y)))
+            ..registerObject('torch', (x, y, width, height) => Torch(LEPosition(x, y)))
+            ..registerObject('barrel', (x, y, width, height) => BarrelDraggable(LEPosition(x, y)))
+            ..registerObject('spike', (x, y, width, height) => Spikes(LEPosition(x, y)))
+            ..registerObject('chest', (x, y, width, height) => Chest(LEPosition(x, y))),
           background: BackgroundColorGame(Colors.blueGrey[900]),
           lightingColorGame: Colors.black.withOpacity(0.5),
-          cameraZoom:
-              1.0, // you can change the game zoom here or directly on camera
+          cameraZoom: 1.0, // you can change the game zoom here or directly on camera
         );
       },
     );

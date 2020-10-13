@@ -3,8 +3,8 @@ import 'package:bonfire/util/collision/collision.dart';
 import 'package:bonfire/util/direction.dart';
 import 'package:bonfire/util/direction_animations/simple_animation_enum.dart';
 import 'package:bonfire/util/direction_animations/simple_direction_animation.dart';
-import 'package:flame/position.dart';
 import 'package:flutter/widgets.dart';
+import 'package:little_engine/little_engine.dart';
 
 class SimpleEnemy extends Enemy {
   SimpleDirectionAnimation animation;
@@ -23,7 +23,7 @@ class SimpleEnemy extends Enemy {
   bool _runFastAnimation = false;
 
   SimpleEnemy({
-    @required Position initPosition,
+    @required LEPosition initPosition,
     @required double height,
     @required double width,
     @required this.animation,
@@ -31,15 +31,9 @@ class SimpleEnemy extends Enemy {
     this.speed = 100,
     Collision collision,
     Direction initDirection = Direction.right,
-  }) : super(
-            initPosition: initPosition,
-            height: height,
-            width: width,
-            life: life,
-            collision: collision) {
+  }) : super(initPosition: initPosition, height: height, width: width, life: life, collision: collision) {
     lastDirection = initDirection;
-    lastDirectionHorizontal =
-        initDirection == Direction.left ? Direction.left : Direction.right;
+    lastDirectionHorizontal = initDirection == Direction.left ? Direction.left : Direction.right;
     idle();
   }
 
@@ -52,9 +46,8 @@ class SimpleEnemy extends Enemy {
       if (animation?.runTop != null) {
         animation?.play(SimpleAnimationEnum.runTop);
       } else {
-        animation?.play(lastDirectionHorizontal == Direction.right
-            ? SimpleAnimationEnum.runRight
-            : SimpleAnimationEnum.runLeft);
+        animation?.play(
+            lastDirectionHorizontal == Direction.right ? SimpleAnimationEnum.runRight : SimpleAnimationEnum.runLeft);
       }
       lastDirection = Direction.top;
     }
@@ -68,9 +61,8 @@ class SimpleEnemy extends Enemy {
       if (animation?.runBottom != null) {
         animation?.play(SimpleAnimationEnum.runBottom);
       } else {
-        animation?.play(lastDirectionHorizontal == Direction.right
-            ? SimpleAnimationEnum.runRight
-            : SimpleAnimationEnum.runLeft);
+        animation?.play(
+            lastDirectionHorizontal == Direction.right ? SimpleAnimationEnum.runRight : SimpleAnimationEnum.runLeft);
       }
       lastDirection = Direction.bottom;
     }
@@ -118,8 +110,7 @@ class SimpleEnemy extends Enemy {
     if (_runFastAnimation) return;
     animation?.play(SimpleAnimationEnum.runBottomRight);
     lastDirection = Direction.bottomRight;
-    this.customMoveRight(speedX,
-        addAnimation: animation?.runBottomRight == null);
+    this.customMoveRight(speedX, addAnimation: animation?.runBottomRight == null);
     this.customMoveBottom(speedY, addAnimation: false);
   }
 
@@ -203,10 +194,10 @@ class SimpleEnemy extends Enemy {
   }
 
   @override
-  void render(Canvas canvas) {
+  void render(Canvas canvas, Offset offset) {
     if (isVisibleInCamera()) {
-      animation?.render(canvas);
+      animation?.render(canvas, offset);
     }
-    super.render(canvas);
+    super.render(canvas, offset);
   }
 }

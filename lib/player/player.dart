@@ -4,15 +4,17 @@ import 'package:bonfire/base/game_component.dart';
 import 'package:bonfire/joystick/joystick_controller.dart';
 import 'package:bonfire/util/collision/collision.dart';
 import 'package:bonfire/util/collision/object_collision.dart';
-import 'package:bonfire/util/mixins/attackable.dart';
+import 'package:bonfire/util/mixin/attacker.dart';
 import 'package:bonfire/util/priority_layer.dart';
-import 'package:flame/position.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:little_engine/little_engine.dart'
+    hide JoystickDirectionalEvent, JoystickActionEvent, JoystickMoveDirectional, JoystickListener;
 
-class Player extends GameComponent
-    with ObjectCollision, Attackable
-    implements JoystickListener {
+/// 玩家
+///
+/// 游戏组件+混合碰撞功能,攻击能力+实现遥感
+class Player extends GameComponent with ObjectCollision, StitchAttacker implements JoystickListener {
   static const REDUCTION_SPEED_DIAGONAL = 0.7;
 
   /// Width of the Player.
@@ -22,7 +24,7 @@ class Player extends GameComponent
   final double height;
 
   /// World position that this Player must position yourself.
-  final Position initPosition;
+  final LEPosition initPosition;
 
   double life;
   double maxLife;
@@ -33,7 +35,7 @@ class Player extends GameComponent
   bool isFocusCamera = true;
 
   @override
-  get isAttackablePlayer => true;
+  get isAttackPlayer => true;
 
   Player({
     @required this.initPosition,
@@ -49,15 +51,13 @@ class Player extends GameComponent
       height,
     );
 
-    this.collisions = [
-      collision ?? Collision(width: width, height: height / 2)
-    ];
+    this.collisions = [collision ?? Collision(width: width, height: height / 2)];
     maxLife = life;
   }
 
   @override
-  void render(Canvas canvas) {
-    super.render(canvas);
+  void render(Canvas canvas, Offset offset) {
+    super.render(canvas, offset);
     if (gameRef != null && gameRef.showCollisionArea && this.position != null) {
       drawCollision(canvas, position, gameRef.collisionAreaColor);
     }
@@ -75,8 +75,7 @@ class Player extends GameComponent
 
     Rect displacement = position.translate(0, (-innerSpeed));
 
-    if (isCollision(displacement: displacement, onlyVisible: isFocusCamera))
-      return;
+    if (isCollision(displacement: displacement, onlyVisible: isFocusCamera)) return;
 
     position = displacement;
   }
@@ -86,8 +85,7 @@ class Player extends GameComponent
 
     Rect displacement = position.translate(innerSpeed, 0);
 
-    if (isCollision(displacement: displacement, onlyVisible: isFocusCamera))
-      return;
+    if (isCollision(displacement: displacement, onlyVisible: isFocusCamera)) return;
 
     position = displacement;
   }
@@ -97,8 +95,7 @@ class Player extends GameComponent
 
     Rect displacement = position.translate(0, innerSpeed);
 
-    if (isCollision(displacement: displacement, onlyVisible: isFocusCamera))
-      return;
+    if (isCollision(displacement: displacement, onlyVisible: isFocusCamera)) return;
 
     position = displacement;
   }
@@ -108,8 +105,7 @@ class Player extends GameComponent
 
     Rect displacement = position.translate(-innerSpeed, 0);
 
-    if (isCollision(displacement: displacement, onlyVisible: isFocusCamera))
-      return;
+    if (isCollision(displacement: displacement, onlyVisible: isFocusCamera)) return;
 
     position = displacement;
   }
@@ -119,16 +115,13 @@ class Player extends GameComponent
     double nextY = (speed * dtUpdate) * sin(angle);
     Offset nextPoint = Offset(nextX, nextY);
 
-    Offset diffBase = Offset(position.center.dx + nextPoint.dx,
-            position.center.dy + nextPoint.dy) -
-        position.center;
+    Offset diffBase = Offset(position.center.dx + nextPoint.dx, position.center.dy + nextPoint.dy) - position.center;
 
     Offset newDiffBase = diffBase;
 
     Rect newPosition = position.shift(newDiffBase);
 
-    if (isCollision(displacement: newPosition, onlyVisible: isFocusCamera))
-      return;
+    if (isCollision(displacement: newPosition, onlyVisible: isFocusCamera)) return;
 
     position = newPosition;
   }
@@ -163,8 +156,8 @@ class Player extends GameComponent
   void joystickChangeDirectional(JoystickDirectionalEvent event) {}
 
   @override
-  int priority() => PriorityLayer.PLAYER;
+  int get priority => PriorityLayer.PLAYER;
 
   @override
-  Rect rectAttackable() => rectCollision;
+  Rect get attackScope => rectCollision;
 }

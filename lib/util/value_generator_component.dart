@@ -1,7 +1,7 @@
 import 'dart:ui';
 
-import 'package:flame/components/component.dart';
 import 'package:flutter/widgets.dart';
+import 'package:little_engine/little_engine.dart';
 
 class ValueGeneratorComponent extends Component {
   bool _isFinished = false;
@@ -28,10 +28,8 @@ class ValueGeneratorComponent extends Component {
   }) {
     _displacement = end - begin;
   }
-
   @override
-  void render(Canvas c) {}
-
+  void render(Canvas c, Offset offset) {}
   @override
   void update(double dt) {
     if (!_isRunning) return;
@@ -68,5 +66,5 @@ class ValueGeneratorComponent extends Component {
   bool get isFinished => _isFinished;
 
   @override
-  bool destroy() => _isFinished;
+  bool willDestroy() => _isFinished;
 }

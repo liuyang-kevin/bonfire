@@ -57,9 +57,8 @@ class BonfireTiledWidget extends StatefulWidget {
   _BonfireTiledWidgetState createState() => _BonfireTiledWidgetState();
 }
 
-class _BonfireTiledWidgetState extends State<BonfireTiledWidget>
-    with TickerProviderStateMixin {
-  RPGGame _game;
+class _BonfireTiledWidgetState extends State<BonfireTiledWidget> with TickerProviderStateMixin {
+  RPGGameEngine _game;
   bool _loading = true;
 
   @override
@@ -104,7 +103,7 @@ class _BonfireTiledWidgetState extends State<BonfireTiledWidget>
       tiled = await widget.map.build();
     }
 
-    _game = RPGGame(
+    _game = RPGGameEngine(
       context: context,
       joystickController: widget.joystick,
       player: widget.player,
@@ -116,10 +115,8 @@ class _BonfireTiledWidgetState extends State<BonfireTiledWidget>
       showCollisionArea: widget.showCollisionArea,
       showFPS: widget.showFPS,
       gameController: widget.gameController,
-      constructionModeColor:
-          widget.constructionModeColor ?? Colors.cyan.withOpacity(0.5),
-      collisionAreaColor:
-          widget.collisionAreaColor ?? Colors.lightGreenAccent.withOpacity(0.5),
+      constructionModeColor: widget.constructionModeColor ?? Colors.cyan.withOpacity(0.5),
+      collisionAreaColor: widget.collisionAreaColor ?? Colors.lightGreenAccent.withOpacity(0.5),
       lightingColorGame: widget.lightingColorGame,
       cameraZoom: widget.cameraZoom,
       cameraSizeMovementWindow: widget.cameraSizeMovementWindow,

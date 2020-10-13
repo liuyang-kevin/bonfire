@@ -7,8 +7,8 @@ import 'package:bonfire/tiled/map_cahe.dart';
 import 'package:bonfire/tiled/tiled_world_data.dart';
 import 'package:bonfire/util/controlled_update_animation.dart';
 import 'package:bonfire/util/extensions.dart';
-import 'package:flame/sprite.dart';
 import 'package:http/http.dart' as http;
+import 'package:little_engine/little_engine.dart';
 import 'package:tiledjsonreader/map/layer/object_group.dart';
 import 'package:tiledjsonreader/map/layer/tile_layer.dart';
 import 'package:tiledjsonreader/map/tiled_map.dart';
@@ -18,8 +18,7 @@ import 'package:tiledjsonreader/tile_set/tile_set_item.dart';
 import 'package:tiledjsonreader/tile_set/tile_set_object.dart';
 import 'package:tiledjsonreader/tiledjsonreader.dart';
 
-typedef ObjectBuilder = GameComponent Function(
-    double x, double y, double width, double height);
+typedef ObjectBuilder = GameComponent Function(double x, double y, double width, double height);
 
 class TiledWorldMap {
   static const TYPE_TILE_ABOVE = 'above';
@@ -44,8 +43,7 @@ class TiledWorldMap {
   Map<String, ObjectBuilder> _objectsBuilder = Map();
   MapCache _mapCache = MapCache();
 
-  TiledWorldMap(this.path,
-      {this.forceTileSize, this.enableServerCache = false}) {
+  TiledWorldMap(this.path, {this.forceTileSize, this.enableServerCache = false}) {
     _basePath = path.replaceAll(path.split('/').last, '');
     fromServer = path.contains('http://') || path.contains('https://');
     if (fromServer) {
@@ -72,7 +70,7 @@ class TiledWorldMap {
     }
 
     return Future.value(TiledWorldData(
-      map: MapWorld(_tiles),
+      map: MapWorldComp(_tiles),
       components: _components,
     ));
   }
@@ -103,11 +101,9 @@ class TiledWorldMap {
               _components.add(
                 GameDecoration.spriteMultiCollision(
                   data.sprite,
-                  initPosition: Position(
-                    (_getX(count, tileLayer.width.toInt()) * _tileWidth) +
-                        offsetX,
-                    (_getY(count, tileLayer.width.toInt()) * _tileHeight) +
-                        offsetY,
+                  initPosition: LEPosition(
+                    (_getX(count, tileLayer.width.toInt()) * _tileWidth) + offsetX,
+                    (_getY(count, tileLayer.width.toInt()) * _tileHeight) + offsetY,
                   ),
                   height: _tileHeight,
                   width: _tileWidth,
@@ -119,7 +115,7 @@ class TiledWorldMap {
               _tiles.add(
                 Tile.fromSpriteMultiCollision(
                   data.sprite,
-                  Position(
+                  LEPosition(
                     _getX(count, tileLayer.width.toInt()),
                     _getY(count, tileLayer.width.toInt()),
                   ),
@@ -137,11 +133,9 @@ class TiledWorldMap {
               _components.add(
                 GameDecoration.animationMultiCollision(
                   data.animation.animation,
-                  initPosition: Position(
-                    (_getX(count, tileLayer.width.toInt()) * _tileWidth) +
-                        offsetX,
-                    (_getY(count, tileLayer.width.toInt()) * _tileHeight) +
-                        offsetY,
+                  initPosition: LEPosition(
+                    (_getX(count, tileLayer.width.toInt()) * _tileWidth) + offsetX,
+                    (_getY(count, tileLayer.width.toInt()) * _tileHeight) + offsetY,
                   ),
                   height: _tileHeight,
                   width: _tileWidth,
@@ -153,7 +147,7 @@ class TiledWorldMap {
               _tiles.add(
                 Tile.fromAnimationMultiCollision(
                   data.animation,
-                  Position(
+                  LEPosition(
                     _getX(count, tileLayer.width.toInt()),
                     _getY(count, tileLayer.width.toInt()),
                   ),
@@ -195,8 +189,7 @@ class TiledWorldMap {
     );
 
     if (tileSetContain != null) {
-      final int widthCount =
-          tileSetContain.imageWidth ~/ tileSetContain.tileWidth;
+      final int widthCount = tileSetContain.imageWidth ~/ tileSetContain.tileWidth;
 
       int row = _getY((index - firsTgId), widthCount).toInt();
       int column = _getX((index - firsTgId), widthCount).toInt();
@@ -282,8 +275,7 @@ class TiledWorldMap {
     );
 
     if ((tileSetItemList?.isNotEmpty ?? false)) {
-      List<TileSetObject> tileSetObjectList =
-          tileSetItemList.first.objectGroup?.objects ?? [];
+      List<TileSetObject> tileSetObjectList = tileSetItemList.first.objectGroup?.objects ?? [];
 
       String type = tileSetItemList.first?.type ?? '';
 
@@ -343,7 +335,7 @@ class TiledWorldMap {
         });
 
         _animationCache[animationKey] = ControlledUpdateAnimation(
-          Animation.spriteList(
+          LEFrameAnimation.spriteList(
             spriteList,
             stepTime: stepTime,
           ),
@@ -392,21 +384,21 @@ class TiledWorldMap {
 
   Future<Image> _loadImage(String image) async {
     if (fromServer) {
-      if (Flame.images.loadedFiles.containsKey(image)) {
-        return Flame.images.loadedFiles[image].retreive();
+      if (LESourceManager.images.loadedFiles.containsKey(image)) {
+        return LESourceManager.images.loadedFiles[image].retrieve();
       }
       if (enableServerCache) {
         final base64 = await _mapCache.getBase64(image);
         if (base64?.isNotEmpty == true) {
-          return Flame.images.fromBase64(image, base64);
+          return LESourceManager.images.fromBase64(image, base64);
         }
       }
       final response = await http.get(image);
       String img64 = base64Encode(response.bodyBytes);
       _mapCache.saveBase64(image, img64);
-      return Flame.images.fromBase64(image, img64);
+      return LESourceManager.images.fromBase64(image, img64);
     } else {
-      return Flame.images.load(image);
+      return LESourceManager.images.load(image);
     }
   }
 }

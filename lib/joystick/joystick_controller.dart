@@ -1,11 +1,10 @@
 import 'dart:ui';
 
-import 'package:bonfire/base/base_game_point_detector.dart';
-import 'package:bonfire/util/mixins/pointer_detector_mixin.dart';
+import 'package:bonfire/base/rpg_game.dart';
+import 'package:bonfire/util/mixin/pointer_detector_mixin.dart';
 import 'package:bonfire/util/priority_layer.dart';
-import 'package:flame/components/component.dart';
-import 'package:flame/components/mixins/has_game_ref.dart';
 import 'package:flutter/services.dart';
+import 'package:little_engine/little_engine.dart';
 
 enum JoystickMoveDirectional {
   MOVE_UP,
@@ -52,8 +51,7 @@ abstract class JoystickListener {
   void joystickAction(JoystickActionEvent event);
 }
 
-abstract class JoystickController extends Component
-    with HasGameRef<BaseGamePointerDetector>, PointerDetector {
+abstract class JoystickController extends Component with StitchUpEngineRef<RPGGameEngine>, PointerDetector {
   List<JoystickListener> _observers = List();
   bool keyboardEnable = false;
 
@@ -72,14 +70,14 @@ abstract class JoystickController extends Component
   }
 
   @override
-  void render(Canvas c) {}
+  void render(Canvas c, Offset offset) {}
 
   @override
   void update(double t) {}
 
   @override
-  int priority() => PriorityLayer.JOYSTICK;
+  int get priority => PriorityLayer.JOYSTICK;
 
   @override
-  bool isHud() => true;
+  bool get isHud => true;
 }

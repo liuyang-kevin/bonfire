@@ -2,10 +2,11 @@ import 'package:bonfire/bonfire.dart';
 import 'package:bonfire/decoration/decoration.dart';
 import 'package:example/map/dungeon_map.dart';
 import 'package:flutter/material.dart';
+import 'package:little_engine/little_engine.dart';
 
 class BarrelDraggable extends GameDecoration with DragGesture {
   TextConfig _textConfig;
-  BarrelDraggable(Position initPosition)
+  BarrelDraggable(LEPosition initPosition)
       : super.sprite(
           Sprite('itens/barrel.png'),
           initPosition: initPosition,
@@ -24,12 +25,12 @@ class BarrelDraggable extends GameDecoration with DragGesture {
   }
 
   @override
-  void render(Canvas canvas) {
-    super.render(canvas);
+  void render(Canvas canvas, Offset offset) {
+    super.render(canvas, offset);
     _textConfig.render(
       canvas,
       'Drag',
-      Position(this.position.left + width / 5, this.position.top - width / 3),
+      LEPosition(this.position.left + width / 5, this.position.top - width / 3),
     );
   }
 }

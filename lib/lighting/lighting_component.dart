@@ -5,6 +5,7 @@ import 'package:bonfire/lighting/lighting.dart';
 import 'package:bonfire/util/priority_layer.dart';
 import 'package:flutter/material.dart';
 
+/// 光源组件,其实就是视野等遮罩
 class LightingComponent extends GameComponent {
   Color color;
   Paint _paintFocus;
@@ -13,17 +14,17 @@ class LightingComponent extends GameComponent {
   ColorTween _tween;
 
   @override
-  bool isHud() => true;
+  bool get isHud => true;
 
   LightingComponent({this.color}) {
     _paintFocus = Paint()..blendMode = BlendMode.clear;
   }
 
   @override
-  int priority() => PriorityLayer.LIGHTING;
+  int get priority => PriorityLayer.LIGHTING;
 
   @override
-  void render(Canvas canvas) {
+  void render(Canvas canvas, Offset offset) {
     if (color == null) return;
     Size size = gameRef.size;
     canvas.saveLayer(Offset.zero & size, Paint());
@@ -47,9 +48,7 @@ class LightingComponent extends GameComponent {
           light.gameComponent.position.center.dy,
         ),
         light.lightingConfig.radius *
-            (light.lightingConfig.withPulse
-                ? (1 - config.valuePulse * config.pulseVariation)
-                : 1),
+            (light.lightingConfig.withPulse ? (1 - config.valuePulse * config.pulseVariation) : 1),
         _paintFocus
           ..maskFilter = MaskFilter.blur(
             BlurStyle.normal,
@@ -69,10 +68,7 @@ class LightingComponent extends GameComponent {
             light.gameComponent.position.center.dx,
             light.gameComponent.position.center.dy,
           ),
-          config.radius *
-              (config.withPulse
-                  ? (1 - config.valuePulse * config.pulseVariation)
-                  : 1),
+          config.radius * (config.withPulse ? (1 - config.valuePulse * config.pulseVariation) : 1),
           paint,
         );
       }

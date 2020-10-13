@@ -8,13 +8,12 @@ mixin TapGesture on GameComponent {
   void onTap();
   void onTapDown(int pointer, Offset position) {
     if (!enableTab) return;
-    if (this.isHud()) {
+    if (this.isHud) {
       if (this.position.contains(position)) {
         _pointer = pointer;
       }
     } else {
-      final absolutePosition =
-          this.gameRef.gameCamera.cameraPositionToWorld(position);
+      final absolutePosition = this.gameRef.gameCamera.cameraPositionToWorld(position);
       if (this.position.contains(absolutePosition)) {
         _pointer = pointer;
       }
@@ -23,15 +22,14 @@ mixin TapGesture on GameComponent {
 
   void onTapUp(int pointer, Offset position) {
     if (!enableTab || pointer != _pointer) return;
-    if (this.isHud()) {
+    if (this.isHud) {
       if (this.position.contains(position)) {
         onTap();
       } else {
         onTapCancel();
       }
     } else {
-      final absolutePosition =
-          this.gameRef.gameCamera.cameraPositionToWorld(position);
+      final absolutePosition = this.gameRef.gameCamera.cameraPositionToWorld(position);
       if (this.position.contains(absolutePosition)) {
         onTap();
       } else {

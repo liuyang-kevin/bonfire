@@ -1,20 +1,24 @@
 import 'dart:math';
 
 import 'package:bonfire/bonfire.dart';
-import 'package:flame/animation.dart' as FlameAnimation;
+import 'package:bonfire/joystick/joystick_controller.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
+import 'package:little_engine/little_engine.dart' hide JoystickDirectionalEvent, JoystickMoveDirectional;
 
+/// 可角度旋转 的 玩家
+///
+/// 一个空闲状态 loop帧动画 + 一个移动帧动画,根据角度绘制玩家对象
 class RotationPlayer extends Player {
-  final FlameAnimation.Animation animIdle;
-  final FlameAnimation.Animation animRun;
+  final LEFrameAnimation animIdle;
+  final LEFrameAnimation animRun;
   double speed;
   double currentRadAngle;
   bool _move = false;
-  FlameAnimation.Animation animation;
+  LEFrameAnimation animation;
 
   RotationPlayer({
-    @required Position initPosition,
+    @required LEPosition initPosition,
     @required this.animIdle,
     @required this.animRun,
     this.speed = 150,
@@ -23,20 +27,13 @@ class RotationPlayer extends Player {
     double height = 32,
     double life = 100,
     Collision collision,
-  }) : super(
-            initPosition: initPosition,
-            width: width,
-            height: height,
-            life: life,
-            collision: collision) {
+  }) : super(initPosition: initPosition, width: width, height: height, life: life, collision: collision) {
     this.animation = animIdle;
   }
 
   @override
   void joystickChangeDirectional(JoystickDirectionalEvent event) {
-    if (event.directional != JoystickMoveDirectional.IDLE &&
-        !isDead &&
-        event.radAngle != 0.0) {
+    if (event.directional != JoystickMoveDirectional.IDLE && !isDead && event.radAngle != 0.0) {
       currentRadAngle = event.radAngle;
       _move = true;
       this.animation = animRun;
@@ -57,7 +54,7 @@ class RotationPlayer extends Player {
   }
 
   @override
-  void render(Canvas canvas) {
+  void render(Canvas canvas, Offset offset) {
     canvas.save();
     canvas.translate(position.center.dx, position.center.dy);
     canvas.rotate(currentRadAngle == 0.0 ? 0.0 : currentRadAngle + (pi / 2));
@@ -68,7 +65,7 @@ class RotationPlayer extends Player {
 
   void _renderAnimation(Canvas canvas) {
     if (animation == null || position == null) return;
-    if (animation.loaded()) {
+    if (animation.loaded) {
       animation.getSprite().renderRect(canvas, position);
     }
   }

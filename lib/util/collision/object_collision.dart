@@ -3,20 +3,19 @@ import 'dart:ui';
 import 'package:bonfire/base/rpg_game.dart';
 import 'package:bonfire/bonfire.dart';
 import 'package:bonfire/util/collision/collision.dart';
-import 'package:bonfire/util/mixins/sensor.dart';
+import 'package:bonfire/util/mixin/sensor.dart';
 import 'package:flutter/material.dart';
 
+import '../../base/rpg_game.dart';
+
+/// 向组件对象附着碰撞方法
+///
+///
 mixin ObjectCollision on GameComponent {
   Iterable<Collision> collisions;
 
-  void triggerSensors(Iterable<Rect> rectCollisions, RPGGame game) {
-    final Iterable<Sensor> sensors = game
-        .visibleSensors()
-        .where(
-          (decoration) => decoration is Sensor,
-        )
-        .cast();
-
+  void triggerSensors(Iterable<Rect> rectCollisions, RPGGameEngine game) {
+    final Iterable<Sensor> sensors = game.visibleSensors().where((decoration) => decoration is Sensor).cast();
     for (final sensor in sensors) {
       if (sensor.areaSensor.overlaps(rectCollisions.first)) {
         sensor.onContact(this);
@@ -24,6 +23,7 @@ mixin ObjectCollision on GameComponent {
     }
   }
 
+  /// 计算是否碰撞
   bool isCollision({
     Rect displacement,
     bool onlyVisible = true,
@@ -34,18 +34,14 @@ mixin ObjectCollision on GameComponent {
     final rectCollisions = getRectCollisions(displacement ?? position);
     if (shouldTriggerSensors) triggerSensors(rectCollisions, gameRef);
 
-    final collisionMap = (onlyVisible
-            ? gameRef?.map?.getCollisionsRendered() ?? []
-            : gameRef?.map?.getCollisions() ?? [])
-        .firstWhere(
+    final collisionMap =
+        (onlyVisible ? gameRef?.map?.getCollisionsRendered() ?? [] : gameRef?.map?.getCollisions() ?? []).firstWhere(
       (i) => i.detectCollision(rectCollisions),
       orElse: () => null,
     );
     if (collisionMap != null) return true;
 
-    final collisionDecorations =
-        (onlyVisible ? gameRef?.visibleDecorations() : gameRef?.decorations())
-            .firstWhere(
+    final collisionDecorations = (onlyVisible ? gameRef?.visibleDecorations() : gameRef?.decorations()).firstWhere(
       (i) => i.detectCollision(rectCollisions) && i != this,
       orElse: () => null,
     );
@@ -58,7 +54,7 @@ mixin ObjectCollision on GameComponent {
     Rect position,
     double translateX,
     double translateY,
-    RPGGame game, {
+    RPGGameEngine game, {
     bool onlyVisible = true,
   }) {
     var moveToCurrent = position.translate(translateX, translateY);

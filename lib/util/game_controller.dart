@@ -3,14 +3,14 @@ import 'package:bonfire/bonfire.dart';
 import 'package:bonfire/decoration/decoration.dart';
 import 'package:bonfire/enemy/enemy.dart';
 import 'package:bonfire/util/camera/camera.dart';
-import 'package:flame/components/mixins/has_game_ref.dart';
+import 'package:little_engine/little_engine.dart';
 
 abstract class GameListener {
   void updateGame();
   void changeCountLiveEnemies(int count);
 }
 
-class GameController with HasGameRef<RPGGame> {
+class GameController with StitchUpEngineRef<RPGGameEngine> {
   GameListener _gameListener;
   int _lastCountLiveEnemies = 0;
 
@@ -32,13 +32,11 @@ class GameController with HasGameRef<RPGGame> {
     }
     if (_gameListener != null) {
       _gameListener.updateGame();
-      if (notifyChangeEnemy)
-        _gameListener.changeCountLiveEnemies(_lastCountLiveEnemies);
+      if (notifyChangeEnemy) _gameListener.changeCountLiveEnemies(_lastCountLiveEnemies);
     }
   }
 
-  Iterable<GameDecoration> get visibleDecorations =>
-      gameRef.visibleDecorations();
+  Iterable<GameDecoration> get visibleDecorations => gameRef.visibleDecorations();
   Iterable<GameDecoration> get allDecorations => gameRef.decorations();
   Iterable<Enemy> get visibleEnemies => gameRef.visibleEnemies();
   Iterable<Enemy> get livingEnemies => gameRef.livingEnemies();

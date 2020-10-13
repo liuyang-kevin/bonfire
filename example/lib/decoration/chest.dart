@@ -1,18 +1,17 @@
 import 'package:bonfire/bonfire.dart';
 import 'package:example/decoration/potion_life.dart';
 import 'package:example/map/dungeon_map.dart';
-import 'package:flame/animation.dart' as FlameAnimation;
-import 'package:flame/position.dart';
 import 'package:flutter/material.dart';
+import 'package:little_engine/little_engine.dart';
 
 class Chest extends GameDecoration with TapGesture {
-  final Position initPosition;
+  final LEPosition initPosition;
   bool _observedPlayer = false;
 
   TextConfig _textConfig;
   Chest(this.initPosition)
       : super.animation(
-          FlameAnimation.Animation.sequenced(
+          LEFrameAnimation.sequenced(
             "itens/chest_spritesheet.png",
             8,
             textureWidth: 16,
@@ -46,14 +45,13 @@ class Chest extends GameDecoration with TapGesture {
   }
 
   @override
-  void render(Canvas canvas) {
-    super.render(canvas);
+  void render(Canvas canvas, Offset offset) {
+    super.render(canvas, offset);
     if (_observedPlayer) {
       _textConfig.render(
         canvas,
         'Touch me !!',
-        Position(
-            position.left - width / 1.5, position.center.dy - (height + 5)),
+        LEPosition(position.left - width / 1.5, position.center.dy - (height + 5)),
       );
     }
   }
@@ -69,7 +67,7 @@ class Chest extends GameDecoration with TapGesture {
   void _addPotions() {
     gameRef.addGameComponent(
       PotionLife(
-        Position(
+        LEPosition(
           position.translate(width * 2, 0).left,
           position.top - height * 2,
         ),
@@ -79,7 +77,7 @@ class Chest extends GameDecoration with TapGesture {
 
     gameRef.addGameComponent(
       PotionLife(
-        Position(
+        LEPosition(
           position.translate(width * 2, 0).left,
           position.top + height * 2,
         ),
@@ -87,9 +85,9 @@ class Chest extends GameDecoration with TapGesture {
       ),
     );
 
-    gameRef.add(
+    gameRef.addComponentLater(
       AnimatedObjectOnce(
-        animation: FlameAnimation.Animation.sequenced(
+        animation: LEFrameAnimation.sequenced(
           "smoke_explosin.png",
           6,
           textureWidth: 16,
@@ -99,9 +97,9 @@ class Chest extends GameDecoration with TapGesture {
       ),
     );
 
-    gameRef.add(
+    gameRef.addComponentLater(
       AnimatedObjectOnce(
-        animation: FlameAnimation.Animation.sequenced(
+        animation: LEFrameAnimation.sequenced(
           "smoke_explosin.png",
           6,
           textureWidth: 16,
@@ -113,9 +111,9 @@ class Chest extends GameDecoration with TapGesture {
   }
 
   void _showEmote() {
-    gameRef.add(
+    gameRef.addComponentLater(
       AnimatedFollowerObject(
-        animation: FlameAnimation.Animation.sequenced(
+        animation: LEFrameAnimation.sequenced(
           'player/emote_exclamacao.png',
           8,
           textureWidth: 32,

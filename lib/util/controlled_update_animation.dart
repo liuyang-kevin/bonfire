@@ -1,16 +1,16 @@
 import 'dart:ui';
 
-import 'package:flame/animation.dart' as FlameAnimation;
+import 'package:little_engine/little_engine.dart';
 
 class ControlledUpdateAnimation {
   bool _alreadyUpdate = false;
-  final FlameAnimation.Animation animation;
+  final LEFrameAnimation animation;
 
   ControlledUpdateAnimation(this.animation);
 
   void render(Canvas canvas, Rect position) {
     if (position == null) return;
-    if (animation != null && animation.loaded()) {
+    if (animation != null && animation.loaded) {
       animation.getSprite().renderRect(canvas, position);
     }
     _alreadyUpdate = false;

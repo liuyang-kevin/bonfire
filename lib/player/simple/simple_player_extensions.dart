@@ -3,15 +3,16 @@ import 'package:bonfire/player/extensions.dart';
 import 'package:bonfire/player/simple/simple_player.dart';
 import 'package:bonfire/util/collision/collision.dart';
 import 'package:bonfire/util/direction.dart';
-import 'package:flame/animation.dart' as FlameAnimation;
 import 'package:flutter/widgets.dart';
+import 'package:little_engine/little_engine.dart';
 
+/// 对SimplePlayer扩展, 扩展近战\远程攻击动画
 extension SimplePlayerExtensions on SimplePlayer {
   void simpleAttackMelee({
-    FlameAnimation.Animation animationRight,
-    FlameAnimation.Animation animationBottom,
-    FlameAnimation.Animation animationLeft,
-    FlameAnimation.Animation animationTop,
+    LEFrameAnimation animationRight,
+    LEFrameAnimation animationBottom,
+    LEFrameAnimation animationLeft,
+    LEFrameAnimation animationTop,
     @required double damage,
     dynamic id,
     Direction direction,
@@ -35,11 +36,11 @@ extension SimplePlayerExtensions on SimplePlayer {
   }
 
   void simpleAttackRange({
-    @required FlameAnimation.Animation animationRight,
-    @required FlameAnimation.Animation animationLeft,
-    @required FlameAnimation.Animation animationTop,
-    @required FlameAnimation.Animation animationBottom,
-    FlameAnimation.Animation animationDestroy,
+    @required LEFrameAnimation animationRight,
+    @required LEFrameAnimation animationLeft,
+    @required LEFrameAnimation animationTop,
+    @required LEFrameAnimation animationBottom,
+    LEFrameAnimation animationDestroy,
     @required double width,
     @required double height,
     dynamic id,

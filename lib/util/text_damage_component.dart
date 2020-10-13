@@ -1,21 +1,22 @@
 import 'dart:math';
 
 import 'package:bonfire/base/rpg_game.dart';
-import 'package:bonfire/bonfire.dart';
 import 'package:bonfire/util/priority_layer.dart';
-import 'package:flame/components/mixins/has_game_ref.dart';
-import 'package:flame/text_config.dart';
+import 'package:little_engine/little_engine.dart';
 
 enum DirectionTextDamage { LEFT, RIGHT, RANDOM, NONE }
 
-class TextDamageComponent extends TextComponent with HasGameRef<RPGGame> {
+/// 攻击数据显示
+///
+/// 攻击数值抖动,由[_position]位置完成
+class TextDamageComponent extends TextComp with StitchUpEngineRef<RPGGameEngine> {
   final String text;
   final TextConfig config;
-  final Position initPosition;
+  final LEPosition initPosition;
   final DirectionTextDamage direction;
   final double maxDownSize;
   bool destroyed = false;
-  Position position;
+  LEPosition _position;
   double _initialY;
   double _velocity;
   final double gravity;
@@ -32,8 +33,8 @@ class TextDamageComponent extends TextComponent with HasGameRef<RPGGame> {
     this.gravity = 0.5,
     this.direction = DirectionTextDamage.RANDOM,
   }) : super(text, config: (config ?? TextConfig(fontSize: 10))) {
-    position = initPosition;
-    _initialY = position.y;
+    _position = initPosition;
+    _initialY = _position.y;
     _velocity = initVelocityTop;
     switch (direction) {
       case DirectionTextDamage.LEFT:
@@ -48,27 +49,23 @@ class TextDamageComponent extends TextComponent with HasGameRef<RPGGame> {
       case DirectionTextDamage.NONE:
         break;
     }
-    setByPosition(position);
+    position = _position;
   }
 
   @override
-  bool destroy() => destroyed;
+  bool willDestroy() => destroyed;
 
   @override
   void update(double t) {
-    setByPosition(Position(
-      position.x,
-      position.y,
-    ));
-
-    position.y += _velocity;
-    position.x += _moveAxisX;
+    position = _position;
+    _position.y += _velocity;
+    _position.x += _moveAxisX;
     _velocity += gravity;
 
     if (onlyUp && _velocity >= 0) {
       remove();
     }
-    if (position.y > _initialY + maxDownSize) {
+    if (_position.y > _initialY + maxDownSize) {
       remove();
     }
 
@@ -80,5 +77,5 @@ class TextDamageComponent extends TextComponent with HasGameRef<RPGGame> {
   }
 
   @override
-  int priority() => PriorityLayer.OBJECTS;
+  int get priority => PriorityLayer.OBJECTS;
 }

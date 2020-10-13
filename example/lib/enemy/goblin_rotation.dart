@@ -2,18 +2,18 @@ import 'dart:ui';
 
 import 'package:bonfire/bonfire.dart';
 import 'package:example/map/dungeon_map.dart';
-import 'package:flame/animation.dart' as FlameAnimation;
+import 'package:little_engine/little_engine.dart';
 
 class GoblinRotation extends RotationEnemy {
-  GoblinRotation(Position initPosition)
+  GoblinRotation(LEPosition initPosition)
       : super(
-          animIdle: FlameAnimation.Animation.sequenced(
+          animIdle: LEFrameAnimation.sequenced(
             "enemy/goblin_idle.png",
             6,
             textureWidth: 16,
             textureHeight: 16,
           ),
-          animRun: FlameAnimation.Animation.sequenced(
+          animRun: LEFrameAnimation.sequenced(
             "enemy/goblin_run_left.png",
             6,
             textureWidth: 16,
@@ -25,8 +25,8 @@ class GoblinRotation extends RotationEnemy {
         );
 
   @override
-  void render(Canvas canvas) {
-    super.render(canvas);
+  void render(Canvas canvas, Offset offset) {
+    super.render(canvas, offset);
     this.drawDefaultLifeBar(canvas);
   }
 
@@ -35,13 +35,13 @@ class GoblinRotation extends RotationEnemy {
     this.seeAndMoveToAttackRange(
         positioned: (player) {
           this.simpleAttackRange(
-              animationTop: FlameAnimation.Animation.sequenced(
+              animationTop: LEFrameAnimation.sequenced(
                 'player/fireball_top.png',
                 3,
                 textureWidth: 23,
                 textureHeight: 23,
               ),
-              animationDestroy: FlameAnimation.Animation.sequenced(
+              animationDestroy: LEFrameAnimation.sequenced(
                 'player/explosion_fire.png',
                 6,
                 textureWidth: 32,
@@ -66,9 +66,9 @@ class GoblinRotation extends RotationEnemy {
 
   @override
   void die() {
-    gameRef.add(
+    gameRef.addComponentLater(
       AnimatedObjectOnce(
-          animation: FlameAnimation.Animation.sequenced(
+          animation: LEFrameAnimation.sequenced(
             "smoke_explosin.png",
             6,
             textureWidth: 16,
