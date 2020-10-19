@@ -5,6 +5,7 @@ import 'package:little_engine/little_engine.dart' hide JoystickMoveDirectional;
 
 import '../../base/game_component.dart';
 
+/// target
 class Camera with StitchUpEngineRef<RPGGameEngine> {
   LEPosition position = LEPosition.empty();
   double zoom;

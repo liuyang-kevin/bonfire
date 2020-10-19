@@ -8,7 +8,7 @@ import 'package:bonfire/util/controlled_update_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:little_engine/little_engine.dart';
 
-class Tile extends GameComponent with ObjectCollision {
+class Tile extends GameComponent with ObjectCollision, DebugRenders {
   Sprite sprite;
   ControlledUpdateAnimation animation;
   final double width;
@@ -123,6 +123,7 @@ class Tile extends GameComponent with ObjectCollision {
     if ((gameRef?.constructionMode ?? false) && isVisibleInCamera()) {
       _drawGrid(canvas);
     }
+    if (gameRef.debugMode) renderDebugMode(canvas);
     super.render(canvas, offset);
   }
 
@@ -170,5 +171,10 @@ class Tile extends GameComponent with ObjectCollision {
   void update(double dt) {
     animation?.update(dt);
     super.update(dt);
+  }
+
+  @override
+  void renderDebugMode(Canvas canvas) {
+    canvas.drawRect(position, debugPaint);
   }
 }

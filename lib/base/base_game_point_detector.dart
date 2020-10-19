@@ -1,4 +1,3 @@
-import 'package:bonfire/base/custom_widget_builder.dart';
 import 'package:bonfire/base/game_component.dart';
 import 'package:bonfire/util/camera/camera.dart';
 import 'package:bonfire/util/gestures/drag_gesture.dart';
@@ -16,11 +15,6 @@ abstract class RPGBaseEngine extends LEStandardEngine with PointerDetector {
 
   /// 可缩放的视角相机
   Camera gameCamera = Camera();
-  //region 为了绑定事件重载了widget
-  final CustomWidgetBuilder widgetBuilder = CustomWidgetBuilder();
-  @override
-  Widget get widget => widgetBuilder.build(this);
-  //endregion
 
   //region 包含点击事件的组件 与 冒泡分发事件
   Iterable<GameComponent> get _gesturesComponents => components
@@ -76,11 +70,13 @@ abstract class RPGBaseEngine extends LEStandardEngine with PointerDetector {
   void render(Canvas canvas, Offset offset) {
     canvas.save();
     // gameCamera定位画面
-    canvas.translate(size.width / 2, size.height / 2);
-    canvas.scale(gameCamera.zoom);
-    canvas.translate(-gameCamera.position.x, -gameCamera.position.y);
+    canvas.translate(size.width / 2, size.height / 2); // 实现->左上角居中
+    canvas.scale(gameCamera.zoom); // 居中缩放
+    canvas.translate(-gameCamera.position.x, -gameCamera.position.y); // 偏移到游戏摄影机
     // 布局控件
     components.forEach((comp) => renderComponent(canvas, comp, offset));
+    // 引擎camera偏移
+    // canvas.translate(-camera.x - 300, -camera.y); // 偏移到全局摄影机
     canvas.restore();
   }
 
@@ -96,6 +92,9 @@ abstract class RPGBaseEngine extends LEStandardEngine with PointerDetector {
     }
 
     canvas.save();
+
+    // 引擎camera偏移
+    canvas.translate(camera.x, camera.y); // 偏移到全局摄影机
 
     if (comp.isHud) {
       canvas.translate(gameCamera.position.x, gameCamera.position.y);

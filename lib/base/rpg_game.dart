@@ -25,6 +25,7 @@ import 'base_game_point_detector.dart';
 
 class RPGGameEngine extends RPGBaseEngine with KeyboardEvents {
   final BuildContext context;
+  final Iterable<Component> ide;
   final Player player;
   final GameInterface interface;
   final MapComp map;
@@ -51,8 +52,11 @@ class RPGGameEngine extends RPGBaseEngine with KeyboardEvents {
   ColorFilterComponent _colorFilterComponent = ColorFilterComponent(GameColorFilter());
   LightingComponent lighting;
 
+
+
   RPGGameEngine({
     @required this.context,
+    this.ide,
     this.map,
     this.joystickController,
     this.player,
@@ -86,6 +90,9 @@ class RPGGameEngine extends RPGBaseEngine with KeyboardEvents {
     );
     gameCamera.gameRef = this;
     gameController?.gameRef = this;
+
+    ide?.forEach((t) => super.addComponent(t)); // ide
+
     if (background != null) super.addComponent(background); // 背景
     if (map != null) super.addComponent(map); // 地图
     decorations?.forEach((decoration) => super.addComponent(decoration)); // 装饰器
