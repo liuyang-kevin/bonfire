@@ -1,20 +1,18 @@
 import 'dart:math';
 
 import 'package:bonfire/base/game_component.dart';
-import 'package:bonfire/joystick/joystick_controller.dart';
 import 'package:bonfire/util/collision/collision.dart';
 import 'package:bonfire/util/collision/object_collision.dart';
 import 'package:bonfire/util/mixin/attacker.dart';
 import 'package:bonfire/util/priority_layer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:little_engine/little_engine.dart'
-    hide JoystickDirectionalEvent, JoystickActionEvent, JoystickMoveDirectional, JoystickListener;
+import 'package:little_engine/little_engine.dart';
 
 /// 玩家
 ///
 /// 游戏组件+混合碰撞功能,攻击能力+实现遥感
-class Player extends GameComponent with ObjectCollision, StitchAttacker implements JoystickListener {
+class Player extends GameComponent with ObjectCollision, StitchAttacker, DebugRenders implements JoystickListener {
   static const REDUCTION_SPEED_DIAGONAL = 0.7;
 
   /// Width of the Player.
@@ -61,6 +59,8 @@ class Player extends GameComponent with ObjectCollision, StitchAttacker implemen
     if (gameRef != null && gameRef.showCollisionArea && this.position != null) {
       drawCollision(canvas, position, gameRef.collisionAreaColor);
     }
+
+    if (gameRef.debugMode) renderDebugMode(canvas);
   }
 
   @override
@@ -160,4 +160,7 @@ class Player extends GameComponent with ObjectCollision, StitchAttacker implemen
 
   @override
   Rect get attackScope => rectCollision;
+
+  @override
+  void renderDebugMode(Canvas canvas) {}
 }

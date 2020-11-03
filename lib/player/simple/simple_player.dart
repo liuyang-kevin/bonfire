@@ -1,9 +1,7 @@
 import 'package:bonfire/bonfire.dart';
-import 'package:bonfire/joystick/joystick_controller.dart';
 import 'package:bonfire/util/direction_animations/simple_direction_animation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:little_engine/little_engine.dart'
-    hide JoystickMoveDirectional, JoystickDirectionalEvent, JoystickActionEvent, ActionEvent;
+import 'package:little_engine/little_engine.dart';
 
 class SimplePlayer extends Player {
   static const REDUCTION_SPEED_DIAGONAL = 0.7;

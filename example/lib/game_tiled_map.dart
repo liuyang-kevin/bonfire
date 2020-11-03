@@ -11,7 +11,7 @@ import 'package:example/map/dungeon_map.dart';
 import 'package:example/player/knight.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:little_engine/little_engine.dart' hide JoystickDirectional, JoystickAction, JoystickActionAlign;
+import 'package:little_engine/little_engine.dart';
 
 class GameTiledMap extends StatelessWidget {
   @override
@@ -20,8 +20,8 @@ class GameTiledMap extends StatelessWidget {
       builder: (context, constraints) {
         DungeonMap.tileSize = max(constraints.maxHeight, constraints.maxWidth) / (kIsWeb ? 25 : 22);
         return BonfireTiledWidget(
-          joystick: Joystick(
-            keyboardEnable: true,
+          joystick: JoystickComp(
+            // keyboardEnable: true,
             directional: JoystickDirectional(
               spriteBackgroundDirectional: Sprite('joystick_background.png'),
               spriteKnobDirectional: Sprite('joystick_knob.png'),

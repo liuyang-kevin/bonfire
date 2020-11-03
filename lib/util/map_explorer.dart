@@ -1,5 +1,5 @@
-import 'package:bonfire/joystick/joystick_controller.dart';
 import 'package:bonfire/util/camera/camera.dart';
+import 'package:little_engine/little_engine.dart';
 
 class MapExplorer implements JoystickListener {
   final Camera camera;

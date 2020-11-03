@@ -4,7 +4,6 @@ import 'package:bonfire/bonfire.dart';
 import 'package:bonfire/decoration/decoration.dart';
 import 'package:bonfire/enemy/enemy.dart';
 import 'package:bonfire/game_interface/game_interface.dart';
-import 'package:bonfire/joystick/joystick_controller.dart';
 import 'package:bonfire/lighting/lighting.dart';
 import 'package:bonfire/lighting/lighting_component.dart';
 import 'package:bonfire/player/player.dart';
@@ -15,15 +14,16 @@ import 'package:bonfire/util/game_controller.dart';
 import 'package:bonfire/util/interval_tick.dart';
 import 'package:bonfire/util/map_explorer.dart';
 import 'package:bonfire/util/mixin/attacker.dart';
+import 'package:bonfire/util/priority_layer.dart';
 import 'package:bonfire/util/value_generator_component.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:little_engine/little_engine.dart' hide JoystickController;
+import 'package:little_engine/little_engine.dart';
 
 import 'base_game_point_detector.dart';
 
-class RPGGameEngine extends RPGBaseEngine with KeyboardEvents {
+class RPGGameEngine extends RPGBaseEngine with MultiTouchDragDetector, KeyboardEvents {
   final BuildContext context;
   final Iterable<Component> ide;
   final Player player;
@@ -51,8 +51,6 @@ class RPGGameEngine extends RPGBaseEngine with KeyboardEvents {
   IntervalTick _interval;
   ColorFilterComponent _colorFilterComponent = ColorFilterComponent(GameColorFilter());
   LightingComponent lighting;
-
-
 
   RPGGameEngine({
     @required this.context,
@@ -102,9 +100,30 @@ class RPGGameEngine extends RPGBaseEngine with KeyboardEvents {
     lighting = LightingComponent(color: lightingColorGame);
     super.addComponent(lighting); // 视野,光源
     super.addComponent((interface ?? GameInterface())); // 输入组件
-    super.addComponent(joystickController ?? Joystick()); // 虚拟摇杆
+    super.addComponent(joystickController ?? JoystickComp(componentPriority: PriorityLayer.JOYSTICK)); // 虚拟摇杆
     joystickController?.addObserver(player ?? MapExplorer(gameCamera));
     _interval = IntervalTick(200, tick: _updateTempList);
+  }
+
+  @override
+  void render(Canvas canvas, Offset offset) {
+    super.render(canvas, offset);
+    if (this.debugMode) {
+      // 绘制摄像机有效区域
+      var p = Paint()
+        ..color = Colors.indigo[50].withAlpha(50)
+        ..style = PaintingStyle.fill;
+      canvas.drawRect(gameCamera.cameraRect, p);
+      p.color = Colors.indigo[50].withAlpha(200);
+      p.style = PaintingStyle.stroke;
+      final screenCenter = Offset(size.width / 2, size.height / 2);
+      var r = Rect.fromCenter(
+        center: screenCenter,
+        width: gameCamera.sizeMovementWindow.width * 2,
+        height: gameCamera.sizeMovementWindow.height * 2,
+      );
+      canvas.drawRect(r, p);
+    }
   }
 
   @override
@@ -155,7 +174,13 @@ class RPGGameEngine extends RPGBaseEngine with KeyboardEvents {
 
   @override
   void onKeyEvent(RawKeyEvent event) {
-    joystickController?.onKeyboard(event);
+    //joystickController?.onKeyboard(event);
+  }
+
+  @override
+  void onReceiveDrag(DragEvent drag) {
+    joystickController?.onReceiveDrag(drag);
+    super.onReceiveDrag(drag);
   }
 
   @override

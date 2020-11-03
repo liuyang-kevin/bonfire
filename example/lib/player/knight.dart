@@ -1,14 +1,13 @@
 import 'dart:ui';
 
 import 'package:bonfire/bonfire.dart';
-import 'package:bonfire/joystick/joystick_controller.dart';
 import 'package:example/map/dungeon_map.dart';
 import 'package:example/util/common_sprite_sheet.dart';
 import 'package:example/util/player_sprite_sheet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:little_engine/little_engine.dart' hide JoystickDirectionalEvent, JoystickActionEvent, ActionEvent;
+import 'package:little_engine/little_engine.dart';
 
 class Knight extends SimplePlayer with Lighting {
   final LEPosition initPosition;
@@ -56,11 +55,11 @@ class Knight extends SimplePlayer with Lighting {
   void joystickAction(JoystickActionEvent event) {
     if (isDead) return;
 
-    if (gameRef.joystickController.keyboardEnable) {
-      if (event.id == LogicalKeyboardKey.space.keyId) {
-        actionAttack();
-      }
-    }
+    // if (gameRef.joystickController.keyboardEnable) {
+    //   if (event.id == LogicalKeyboardKey.space.keyId) {
+    //     actionAttack();
+    //   }
+    // }
 
     if (event.id == 0 && event.event == ActionEvent.DOWN) {
       actionAttack();

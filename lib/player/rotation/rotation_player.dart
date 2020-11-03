@@ -1,10 +1,9 @@
 import 'dart:math';
 
 import 'package:bonfire/bonfire.dart';
-import 'package:bonfire/joystick/joystick_controller.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
-import 'package:little_engine/little_engine.dart' hide JoystickDirectionalEvent, JoystickMoveDirectional;
+import 'package:little_engine/little_engine.dart';
 
 /// 可角度旋转 的 玩家
 ///

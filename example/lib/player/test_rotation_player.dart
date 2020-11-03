@@ -1,6 +1,5 @@
 import 'package:bonfire/bonfire.dart';
-import 'package:bonfire/joystick/joystick_controller.dart';
-import 'package:little_engine/little_engine.dart' hide JoystickDirectionalEvent, JoystickActionEvent, ActionEvent;
+import 'package:little_engine/little_engine.dart';
 
 class TestRotationPlayer extends RotationPlayer {
   double initSpeed = 150;

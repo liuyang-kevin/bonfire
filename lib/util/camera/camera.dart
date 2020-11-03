@@ -1,7 +1,6 @@
 import 'package:bonfire/base/rpg_game.dart';
-import 'package:bonfire/joystick/joystick_controller.dart';
 import 'package:flutter/widgets.dart';
-import 'package:little_engine/little_engine.dart' hide JoystickMoveDirectional;
+import 'package:little_engine/little_engine.dart';
 
 import '../../base/game_component.dart';
 
