@@ -113,7 +113,8 @@ class RPGGameEngine extends RPGBaseEngine with MultiTouchDragDetector, KeyboardE
       var p = Paint()
         ..color = Colors.indigo[50].withAlpha(50)
         ..style = PaintingStyle.fill;
-      canvas.drawRect(gameCamera.cameraRect, p);
+      // gameCamera.cameraRect.translate(size.width, size.height)
+      // canvas.drawRect(gameCamera.cameraRect, p);
       p.color = Colors.indigo[50].withAlpha(200);
       p.style = PaintingStyle.stroke;
       final screenCenter = Offset(size.width / 2, size.height / 2);

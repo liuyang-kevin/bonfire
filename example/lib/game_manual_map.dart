@@ -48,7 +48,7 @@ class GameManualMap extends StatelessWidget implements GameListener {
         player: Knight(
           LEPosition((4 * DungeonMap.tileSize), (6 * DungeonMap.tileSize)),
         ),
-        interface: KnightInterface(),
+        interface: KnightInterface(), // 骑士相关UI,游戏相关UI
         map: DungeonMap.map(),
         enemies: DungeonMap.enemies(),
         decorations: DungeonMap.decorations(),
@@ -70,6 +70,7 @@ class GameManualMap extends StatelessWidget implements GameListener {
     }
   }
 
+  /// 添加敌人
   void _addEnemyInWorld() {
     double x = DungeonMap.tileSize * (4 + Random().nextInt(25));
     double y = DungeonMap.tileSize * (5 + Random().nextInt(3));
