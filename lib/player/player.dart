@@ -59,8 +59,6 @@ class Player extends GameComponent with ObjectCollision, StitchAttacker, DebugRe
     if (gameRef != null && gameRef.showCollisionArea && this.position != null) {
       drawCollision(canvas, position, gameRef.collisionAreaColor);
     }
-
-    if (gameRef.debugMode) renderDebugMode(canvas);
   }
 
   @override
@@ -162,5 +160,7 @@ class Player extends GameComponent with ObjectCollision, StitchAttacker, DebugRe
   Rect get attackScope => rectCollision;
 
   @override
-  void renderDebugMode(Canvas canvas) {}
+  bool get debugMode => gameRef.debugMode;
+  @override
+  void renderDebugMode(Canvas canvas, Offset offset) {}
 }

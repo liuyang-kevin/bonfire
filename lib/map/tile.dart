@@ -123,7 +123,6 @@ class Tile extends GameComponent with ObjectCollision, DebugRenders {
     if ((gameRef?.constructionMode ?? false) && isVisibleInCamera()) {
       _drawGrid(canvas);
     }
-    // if (gameRef.debugMode) renderDebugMode(canvas);
     super.render(canvas, offset);
   }
 
@@ -174,7 +173,9 @@ class Tile extends GameComponent with ObjectCollision, DebugRenders {
   }
 
   @override
-  void renderDebugMode(Canvas canvas) {
+  bool get debugMode => gameRef.debugMode;
+  @override
+  void renderDebugMode(Canvas canvas, Offset offset) {
     canvas.drawRect(position, debugPaint);
   }
 }

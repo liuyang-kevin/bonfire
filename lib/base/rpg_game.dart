@@ -23,7 +23,7 @@ import 'package:little_engine/little_engine.dart';
 
 import 'base_game_point_detector.dart';
 
-class RPGGameEngine extends RPGBaseEngine with MultiTouchDragDetector, KeyboardEvents {
+class RPGGameEngine extends RPGBaseEngine with MultiTouchDragDetector, MultiTouchTapDetector, KeyboardEvents {
   final BuildContext context;
   final Iterable<Component> ide;
   final Player player;
@@ -182,6 +182,13 @@ class RPGGameEngine extends RPGBaseEngine with MultiTouchDragDetector, KeyboardE
   void onReceiveDrag(DragEvent drag) {
     joystickController?.onReceiveDrag(drag);
     super.onReceiveDrag(drag);
+  }
+
+  @override
+  void onTapDown(int pointerId, TapDownDetails details) {
+    // details.globalPosition 等于 widgetGlobalOffset + details.localPosition
+    joystickController?.onTapDown(pointerId, details);
+    super.onTapDown(pointerId, details);
   }
 
   @override
