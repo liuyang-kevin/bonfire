@@ -175,7 +175,7 @@ class RPGGameEngine extends RPGBaseEngine with MultiTouchDragDetector, MultiTouc
 
   @override
   void onKeyEvent(RawKeyEvent event) {
-    //joystickController?.onKeyboard(event);
+    joystickController?.onKeyboard(event);
   }
 
   @override
