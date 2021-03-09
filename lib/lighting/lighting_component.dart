@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:bonfire/base/game_component.dart';
 import 'package:bonfire/lighting/lighting.dart';
 import 'package:bonfire/util/priority_layer.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// 光源组件,其实就是视野等遮罩
@@ -17,7 +18,12 @@ class LightingComponent extends GameComponent {
   bool get isHud => true;
 
   LightingComponent({this.color}) {
-    _paintFocus = Paint()..blendMode = BlendMode.clear;
+    if (kIsWeb) {
+      // _paintFocus = Paint()..blendMode = BlendMode.xor;
+      _paintFocus = Paint()..blendMode = BlendMode.xor;
+    } else {
+      _paintFocus = Paint()..blendMode = BlendMode.clear;
+    }
   }
 
   @override
@@ -37,23 +43,16 @@ class LightingComponent extends GameComponent {
 
       canvas.translate(size.width / 2, size.height / 2);
       canvas.scale(gameRef.gameCamera.zoom);
-      canvas.translate(
-        -gameRef.gameCamera.position.x,
-        -gameRef.gameCamera.position.y,
-      );
-
+      canvas.translate(-gameRef.gameCamera.position.x, -gameRef.gameCamera.position.y);
+      if (kIsWeb) {
+        _paintFocus.maskFilter = MaskFilter.blur(BlurStyle.outer, sigma);
+      } else {
+        _paintFocus.maskFilter = MaskFilter.blur(BlurStyle.normal, sigma);
+      }
       canvas.drawCircle(
-        Offset(
-          light.gameComponent.position.center.dx,
-          light.gameComponent.position.center.dy,
-        ),
-        light.lightingConfig.radius *
-            (light.lightingConfig.withPulse ? (1 - config.valuePulse * config.pulseVariation) : 1),
-        _paintFocus
-          ..maskFilter = MaskFilter.blur(
-            BlurStyle.normal,
-            sigma,
-          ),
+        Offset(light.gameComponent.position.center.dx, light.gameComponent.position.center.dy),
+        config.radius * (config.withPulse ? (1 - config.valuePulse * config.pulseVariation) : 1),
+        _paintFocus,
       );
 
       if (config.color != null) {
